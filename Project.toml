@@ -3,6 +3,10 @@ uuid = "12437450-cb6d-4160-8bfe-4da7ff118fc0"
 authors = ["tlorans <thomaslorans@gmail.Com> and contributors"]
 version = "0.1.0"
 
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+
 [compat]
 julia = "1"
 
