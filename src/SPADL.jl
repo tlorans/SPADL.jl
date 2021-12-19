@@ -20,11 +20,13 @@ module SPADL
 
     # Serializers
     get_events_data,
-    get_df,
-    to_hdf,
+
 
     # utils 
-    df2dict
+    get_df,
+    to_hdf,
+    create_match_index,
+    get_matchs
 
     include("eventsdata.jl")
     include("loader.jl")
