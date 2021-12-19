@@ -12,18 +12,23 @@ module SPADL
     using JSON3 
     using JSONTables
     using ProgressMeter
-    using StructTypes
+    using HDF5 
 
     export 
     # Types 
     WyscoutPublic,
 
     # Serializers
-    get_events_data
+    get_events_data,
+    get_df,
+    to_hdf,
+
+    # utils 
+    df2dict
 
     include("eventsdata.jl")
-    include("serializers.jl")
-
+    include("loader.jl")
+    include("utils.jl")
     function __init__()
 
         nothing

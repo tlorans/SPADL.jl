@@ -2,6 +2,16 @@
 
 abstract type Schema end
 
+
+"""
+    WyscoutSchema
+"""
+struct WyscoutSchema
+    team::W
+end
+
+
+
 """
     WyscoutTeamSchema
 """
