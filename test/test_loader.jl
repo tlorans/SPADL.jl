@@ -20,12 +20,16 @@ DataFrame(DataFrame(test[1,:teamsData])[1,1])
 
 
 
-
+eachindex(match_index.db_matches)
 
 test = get_df(:competitions)
-
-to_hdf(test, "wyscout.h5", "teams")
+match_index
 
 match_index = create_match_index()
 
+test = lineup(match_index, 2576335)
+
+
 get_df()
+
+to_hdf(test, "wyscout.h5", "teams")

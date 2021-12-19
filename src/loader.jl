@@ -17,6 +17,32 @@ Base.@kwdef struct WyscoutEventDataPublicSerializer <: Serializer
 end
 
 """
+    function download_repo()
+"""
+function download_repo(data_loader::WyscoutEventDataPublicSerializer, path::String)
+
+    HTTP.download(data_loader.competitions_url, local_path = path)
+    HTTP.download(data_loader.events_url, local_path = path)
+    HTTP.download(data_loader.matches_url,local_path = path)
+    HTTP.download(data_loader.players_url, local_path = path)
+    HTTP.download(data_loader.teams_url, local_path = path)
+end
+
+"""
+    function get_events_data()
+"""
+function get_events_data(source::Symbol; path::String = "/data")
+
+    if source == :wyscout 
+        event_data_urls = WyscoutEventDataPublicSerializer()
+        download_repo(event_data_urls, path)
+    end
+
+    return
+end
+
+
+"""
     function get_competitions()
 """
 function create_match_index()
@@ -77,8 +103,18 @@ competitions = """
 
     competitions = DataFrame(jsontable(JSON3.read((competitions))))
 
-    return competitions
+    list_matches = []
 
+    for i in eachindex(competitions.db_matches)
+        tmp = get_matchs(competitions[i,:db_matches])
+        push!(list_matches,tmp)
+    end
+
+    matches = reduce(vcat, list_matches)
+    matches = matches[:, [:wyId, :competitionId, :seasonId]]
+
+    matches = leftjoin(matches, competitions, on = [:competition_id, :season_id])
+    return matches
 end
 
 
@@ -91,33 +127,14 @@ function get_matchs(matches::String)
     dictio = Dict(zarchive.files[i].name => i for i in eachindex(zarchive.files))
     file_num = dictio[matches]
     data = DataFrame(jsontable(JSON3.read(read(zarchive.files[file_num]))))
+
+    rename!(data, :wyId => :match_id,
+        :competitionId => :competition_id,
+        :seasonId => :season_id)
     return data
 end
 
-"""
-    function download_repo()
-"""
-function download_repo(data_loader::WyscoutEventDataPublicSerializer, path::String)
 
-    HTTP.download(data_loader.competitions_url, local_path = path)
-    HTTP.download(data_loader.events_url, local_path = path)
-    HTTP.download(data_loader.matches_url,local_path = path)
-    HTTP.download(data_loader.players_url, local_path = path)
-    HTTP.download(data_loader.teams_url, local_path = path)
-end
-
-"""
-    function get_events_data()
-"""
-function get_events_data(source::Symbol; path::String = "/data")
-
-    if source == :wyscout 
-        event_data_urls = WyscoutEventDataPublicSerializer()
-        download_repo(event_data_urls, path)
-    end
-
-    return
-end
 
 """
     function get_df()
@@ -143,3 +160,12 @@ function get_df(file::String)
     return data
 end
 
+function lineup(match_index::DataFrame, game_id::Int)
+    tmp = filter("match_id" => ==(game_id), match_index)
+    data = get_matchs(tmp[1,:db_matches])
+    data = filter("match_id"=> ==(game_id), data)[:,"teamsData"]
+    data = DataFrame(data)
+    data = Dict(i => DataFrame(data[:,i]) for i in names(data))
+
+    return data
+end

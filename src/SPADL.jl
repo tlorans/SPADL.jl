@@ -26,7 +26,8 @@ module SPADL
     get_df,
     to_hdf,
     create_match_index,
-    get_matchs
+    get_matchs,
+    lineup
 
     include("eventsdata.jl")
     include("loader.jl")
