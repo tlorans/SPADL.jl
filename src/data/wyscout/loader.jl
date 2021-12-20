@@ -130,7 +130,16 @@ function get_matchs(matches::String)
     return data
 end
 
+"""
+    function get_events(events::String)
+"""
+function get_events(events::String)
+    zarchive = ZipFile.Reader("/tmp/events.zip")
+    dictio = Dict(zarchive.files[i].name => i for i in eachindex(zarchive.files))
+    file_num = dictio[events]
+    data = DataFrame(jsontable(JSON3.read(read(zarchive.files[file_num]))))
 
+end
 
 """
     function get_df()
@@ -235,16 +244,34 @@ function players(event_data::PublicWyscoutLoader, game_id::Int)
         df_team = lineups[team]
         df_players = DataFrame(df_team[:,:formation])
         playerslist = DataFrame(df_players[1,:lineup])[:,:playerId]
-        substitutes = DataFrame(df_players[1,:substitutions])[:,:playerIn]
-        playerslist = vcat(playerslist, substitutes)
-        df_team = DataFrame(:game_id => game_id,
-                            :team_id => parse(Int,team),
-                            :player_id => playerslist)
-        push!(list_df, df_team)
+
+
+        substitutes = DataFrame(df_players[1,:substitutions])
+        playerslist = vcat(playerslist, vec(substitutes[:,:playerIn]))
+
+        playerslist = DataFrame(:player_id => playerslist,
+                                :is_starter => true,
+                                :minutes_played => 90)
+
+        for j in eachindex(playerslist.player_id)
+            if playerslist[j, :player_id] in vec(substitutes[:,:playerOut])
+                new_min_played = filter("playerOut" => ==(playerslist[j,:player_id]), substitutes)[1,:minute]
+                playerslist[j, :minutes_played] = new_min_played
+            elseif playerslist[j, :player_id] in vec(substitutes[:,:playerIn])
+                new_min_played = filter("playerIn" => ==(playerslist[j,:player_id]), substitutes)[1,:minute]
+                playerslist[j, :minutes_played] -= new_min_played
+            end
+        end
+
+        insertcols!(playerslist, :game_id => game_id,
+                    :team_id => parse(Int,team))
+
+        push!(list_df, playerslist)
     end
 
     teams_df = reduce(vcat, list_df)
     players_df = leftjoin(teams_df, players_df, on = :player_id)
+
     return players_df
 end
 

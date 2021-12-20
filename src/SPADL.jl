@@ -27,6 +27,8 @@ module SPADL
     games,
     teams,
     players,
+    get_events,
+    lineup,
 
     # utils 
     to_hdf
