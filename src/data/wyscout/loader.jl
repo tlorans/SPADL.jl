@@ -29,16 +29,33 @@ function download_repo(data_loader::WyscoutEventDataPublicSerializer, path::Stri
 end
 
 """
-    function get_events_data()
+    PublicWyscoutLoader
 """
-function get_events_data(source::Symbol; path::String = "/data")
+Base.@kwdef struct PublicWyscoutLoader
+    match_index::DataFrame = create_match_index()
+end
 
-    if source == :wyscout 
-        event_data_urls = WyscoutEventDataPublicSerializer()
-        download_repo(event_data_urls, path)
+"""
+    function competitions()
+Return a dataframe with all available competitions and seasons.
+"""
+function competitions(events_data::PublicWyscoutLoader)
+    data = get_df("competitions.json")
+    rename!(data, :wyId => :competition_id, :name => :competition_name)
+    country_names = DataFrame(data[:, :area])[:,:name]
+    for i in eachindex(country_names)
+        if country_names[i] == ""
+            country_names[i] = "International"
+        end 
     end
+    insertcols!(data, :country_name => country_names,
+                    :competition_gender => "male")
 
-    return
+    data = data[:,[:competition_id, :competition_name, :country_name, :competition_gender]]
+
+    data = leftjoin(data, unique(events_data.match_index[:,[:competition_id, :season_id, :season_name]]), on = [:competition_id])
+
+    return data
 end
 
 
@@ -48,7 +65,7 @@ end
 function create_match_index()
 
 
-competitions = """
+for_index = """
 [
     {
         "competition_id": 524,
@@ -101,19 +118,18 @@ competitions = """
     }
 ]"""
 
-    competitions = DataFrame(jsontable(JSON3.read((competitions))))
+    for_index = DataFrame(jsontable(JSON3.read((for_index))))
 
     list_matches = []
 
-    for i in eachindex(competitions.db_matches)
-        tmp = get_matchs(competitions[i,:db_matches])
+    for i in eachindex(for_index.db_matches)
+        tmp = get_matchs(for_index[i,:db_matches])
         push!(list_matches,tmp)
     end
 
     matches = reduce(vcat, list_matches)
-    matches = matches[:, [:wyId, :competitionId, :seasonId]]
 
-    matches = leftjoin(matches, competitions, on = [:competition_id, :season_id])
+    matches = leftjoin(matches, for_index, on = [:competition_id, :season_id])
     return matches
 end
 
@@ -131,6 +147,9 @@ function get_matchs(matches::String)
     rename!(data, :wyId => :match_id,
         :competitionId => :competition_id,
         :seasonId => :season_id)
+    
+    data = data[:, [:match_id, :competition_id, :season_id]]
+
     return data
 end
 
@@ -142,20 +161,6 @@ end
 function get_df(file::String)
 
     data = DataFrame(jsontable(JSON3.read(read(string("/tmp/",file)))))
-    # if file == :teams
-    #     data = DataFrame(jsontable(JSON3.read(read("/tmp/teams.json"))))
-    #     data = data[:, [:name, :wyId, :officialName]]
-    #     rename!(data, [:team_name_short, :team_id, :team_name])
-    
-    # elseif file == :competitions 
-    #     data = DataFrame(jsontable(JSON3.read(read("/tmp/competitions.json"))))
-    #     data = data[:,[:wyId, :name]]
-
-    # elseif file == :players
-    #     data = DataFrame(jsontable(JSON3.read(read("/tmp/players.json"))))
- 
-    # end
-
 
     return data
 end

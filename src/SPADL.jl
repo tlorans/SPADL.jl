@@ -20,17 +20,17 @@ module SPADL
 
     # Serializers
     get_events_data,
-
-
-    # utils 
-    get_df,
-    to_hdf,
     create_match_index,
     get_matchs,
-    lineup
+    lineup,
+    get_df,
+    competitions,
 
-    include("eventsdata.jl")
-    include("loader.jl")
+    # utils 
+    to_hdf
+
+
+    include("data/data.jl")
     include("utils.jl")
     function __init__()
 
