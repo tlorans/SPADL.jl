@@ -13,6 +13,7 @@ module SPADL
     using JSONTables
     using ProgressMeter
     using HDF5 
+    
 
     export 
     # Types 
@@ -29,6 +30,7 @@ module SPADL
     players,
     get_events,
     lineup,
+    events,
 
     # utils 
     to_hdf

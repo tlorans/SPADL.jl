@@ -137,8 +137,9 @@ function get_events(events::String)
     zarchive = ZipFile.Reader("/tmp/events.zip")
     dictio = Dict(zarchive.files[i].name => i for i in eachindex(zarchive.files))
     file_num = dictio[events]
-    data = DataFrame(jsontable(JSON3.read(read(zarchive.files[file_num]))))
-
+    str = read(zarchive.files[file_num])
+    
+    return str
 end
 
 """
@@ -296,6 +297,43 @@ function convert_players(data::DataFrame)
     insertcols!(players_df, :player_name => string.(players_df[:,:firstname]," ",players_df[:,:lastname]))
 
     return players_df
+end
+
+"""
+    function events()
+Return a Dataframe with all events in the game
+"""
+function events(events_data::PublicWyscoutLoader, game_id::Int)
+    view = filter("match_id"=> ==(game_id), events_data.match_index)[1,:db_events]
+    str = get_events(view)
+
+    data = JSON3.read(str)
+    data = [copy(data[i]) for i in eachindex(data) if data[i][:matchId] == game_id]
+    
+    # data = convert_events(data)
+    return data
+end
+
+
+"""
+    function convert_events()
+"""
+function convert_events(data::DataFrame)
+
+    rename!(data, :id => :event_id,
+                    :matchId => :game_id,
+                    :matchPeriod => :period_id,
+                    :eventSec => :milliseconds,
+                    :teamId => :team_id,
+                    :playerId => :player_id,
+                    :eventId => :type_id,
+                    :eventName => :type_name,
+                    :subEventId => :subtype_id,
+                    :subEventName => :subtype_name)
+
+
+    data[:, :milliseconds] = data[:,:milliseconds] * 1000
+    return data
 end
 
 function lineup(event_data::PublicWyscoutLoader, game_id::Int)
