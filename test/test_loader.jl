@@ -18,8 +18,7 @@ players_test = players(test, 2576335)
 
 using DataFrames, JSON3, JSONTables
 @time events_test = events(test, 2576335)
-collect(keys(events_test[1]))
-DataFrame(events_test[1][:positions])
 
 
-test = events_test.
+
+

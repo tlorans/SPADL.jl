@@ -310,7 +310,16 @@ function events(events_data::PublicWyscoutLoader, game_id::Int)
     data = JSON3.read(str)
     data = [copy(data[i]) for i in eachindex(data) if data[i][:matchId] == game_id]
     
-    # data = convert_events(data)
+    positions = [collect(data[i][:positions]) for i in eachindex(data)]
+    tags = [collect(data[i][:tags]) for i in eachindex(data)]
+    [delete!(data[i], :positions) for i in eachindex(data)]
+    [delete!(data[i], :tags) for i in eachindex(data)]
+
+
+    data = vcat(DataFrame.(data)...)
+    insertcols!(data, :positions => positions,
+                :tas => tags)
+    data = convert_events(data)
     return data
 end
 
