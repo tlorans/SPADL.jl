@@ -5,8 +5,9 @@ test = get_events_data(:wyscout)
 check = competitions(test)
 
 match_test = games(test, 524, 181248)
-
-
+test.match_index
+teams_test = teams(test, 2576335)
+test_lineup = lineup(test, 2576335)
 
 println(check[:,:name])
 # using DataFrames

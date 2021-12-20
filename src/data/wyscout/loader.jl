@@ -36,60 +36,6 @@ Base.@kwdef struct PublicWyscoutLoader
 end
 
 """
-    function competitions()
-Return a dataframe with all available competitions and seasons.
-"""
-function competitions(events_data::PublicWyscoutLoader)
-    data = get_df("competitions.json")
-    rename!(data, :wyId => :competition_id, :name => :competition_name)
-    country_names = DataFrame(data[:, :area])[:,:name]
-    for i in eachindex(country_names)
-        if country_names[i] == ""
-            country_names[i] = "International"
-        end 
-    end
-    insertcols!(data, :country_name => country_names,
-                    :competition_gender => "male")
-
-    data = data[:,[:competition_id, :competition_name, :country_name, :competition_gender]]
-
-    data = leftjoin(data, unique(events_data.match_index[:,[:competition_id, :season_id, :season_name]]), on = [:competition_id])
-
-    return data
-end
-
-"""
-    function games()
-Return a dataframe with all available games in a season.
-"""
-function games(events_data::PublicWyscoutLoader, competition_id::Int, season_id::Int)
-    
-    data = filter("competition_id" => ==(competition_id),events_data.match_index)
-    data = filter("season_id"=> ==(season_id), data)
-    data = unique(data[:,[:competition_id, :season_id, :db_matches]])
-
-    match_data = get_matchs(data[1,:db_matches])
-    rename!(match_data, :seasonId => :season_id,
-                        :gameweek => :game_day,
-                        :competitionId => :competition_id,
-                        :wyId => :game_id,
-                        :dateutc => :game_date)
-    
-    match_data = leftjoin(match_data,data, on = [:competition_id, :season_id])
-    insertcols!(match_data, :home_team_id => 0, :away_team_id => 0)
-    for i in eachindex(match_data.season_id)
-        teams_id = names(DataFrame(match_data[i, :teamsData]))
-        match_data[i, :home_team_id] = parse(Int,teams_id[1])
-        match_data[i, :away_team_id] = parse(Int,teams_id[2])
-    end
-
-    match_data = match_data[:,[:season_id, :competition_id, :game_day, :game_id, :game_date,:home_team_id, :away_team_id]]
-
-    return match_data
-end
-
-
-"""
     function create_match_index()
 """
 function create_match_index()
@@ -196,10 +142,88 @@ function get_df(file::String)
     return data
 end
 
-function lineup(match_index::DataFrame, game_id::Int)
-    tmp = filter("match_id" => ==(game_id), match_index)
+
+
+"""
+    function competitions()
+Return a dataframe with all available competitions and seasons.
+"""
+function competitions(events_data::PublicWyscoutLoader)
+    data = get_df("competitions.json")
+    rename!(data, :wyId => :competition_id, :name => :competition_name)
+    country_names = DataFrame(data[:, :area])[:,:name]
+    for i in eachindex(country_names)
+        if country_names[i] == ""
+            country_names[i] = "International"
+        end 
+    end
+    insertcols!(data, :country_name => country_names,
+                    :competition_gender => "male")
+
+    data = data[:,[:competition_id, :competition_name, :country_name, :competition_gender]]
+
+    data = leftjoin(data, unique(events_data.match_index[:,[:competition_id, :season_id, :season_name]]), on = [:competition_id])
+
+    return data
+end
+
+"""
+    function games()
+Return a dataframe with all available games in a season.
+"""
+function games(events_data::PublicWyscoutLoader, competition_id::Int, season_id::Int)
+    
+    data = filter("competition_id" => ==(competition_id),events_data.match_index)
+    data = filter("season_id"=> ==(season_id), data)
+    data = unique(data[:,[:competition_id, :season_id, :db_matches]])
+
+    match_data = get_matchs(data[1,:db_matches])
+    rename!(match_data, :seasonId => :season_id,
+                        :gameweek => :game_day,
+                        :competitionId => :competition_id,
+                        :wyId => :game_id,
+                        :dateutc => :game_date)
+    
+    match_data = leftjoin(match_data,data, on = [:competition_id, :season_id])
+    insertcols!(match_data, :home_team_id => 0, :away_team_id => 0)
+    for i in eachindex(match_data.season_id)
+        teams_id = names(DataFrame(match_data[i, :teamsData]))
+        match_data[i, :home_team_id] = parse(Int,teams_id[1])
+        match_data[i, :away_team_id] = parse(Int,teams_id[2])
+    end
+
+    match_data = match_data[:,[:season_id, :competition_id, :game_day, :game_id, :game_date,:home_team_id, :away_team_id]]
+
+    return match_data
+end
+
+"""
+    function teams()
+
+Return a dataframe with both teams that participated in a game.
+"""
+function teams(event_data::PublicWyscoutLoader, game_id::Int)
+
+    teams_df = get_df("teams.json")
+    rename!(teams_df, :name => :team_name_short,
+                        :officialName => :team_name,
+                        :wyId => :team_id)
+
+    teams_df = teams_df[:,[:team_id, :team_name, :team_name_short]]
+    teams_id = collect(keys(lineup(event_data, game_id)))
+    teams_id = DataFrame(:team_id => parse.(Int, teams_id))
+
+    data = leftjoin(teams_id, teams_df, on = :team_id)
+    return data
+end
+
+
+
+
+function lineup(event_data::PublicWyscoutLoader, game_id::Int)
+    tmp = filter("match_id" => ==(game_id), event_data.match_index)
     data = get_matchs(tmp[1,:db_matches])
-    data = filter("match_id"=> ==(game_id), data)[:,"teamsData"]
+    data = filter("wyId"=> ==(game_id), data)[:,"teamsData"]
     data = DataFrame(data)
     data = Dict(i => DataFrame(data[:,i]) for i in names(data))
 

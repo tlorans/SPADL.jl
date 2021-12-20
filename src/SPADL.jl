@@ -26,6 +26,7 @@ module SPADL
     get_df,
     competitions,
     games,
+    teams,
 
     # utils 
     to_hdf
@@ -33,6 +34,7 @@ module SPADL
 
     include("data/data.jl")
     include("utils.jl")
+
     function __init__()
 
         nothing
