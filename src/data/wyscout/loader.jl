@@ -318,7 +318,7 @@ function events(events_data::PublicWyscoutLoader, game_id::Int)
 
     data = vcat(DataFrame.(data)...)
     insertcols!(data, :positions => positions,
-                :tas => tags)
+                :tags => tags)
     data = convert_events(data)
     return data
 end
