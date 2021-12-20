@@ -58,9 +58,39 @@ function competitions(events_data::PublicWyscoutLoader)
     return data
 end
 
+"""
+    function games()
+Return a dataframe with all available games in a season.
+"""
+function games(events_data::PublicWyscoutLoader, competition_id::Int, season_id::Int)
+    
+    data = filter("competition_id" => ==(competition_id),events_data.match_index)
+    data = filter("season_id"=> ==(season_id), data)
+    data = unique(data[:,[:competition_id, :season_id, :db_matches]])
+
+    match_data = get_matchs(data[1,:db_matches])
+    rename!(match_data, :seasonId => :season_id,
+                        :gameweek => :game_day,
+                        :competitionId => :competition_id,
+                        :wyId => :game_id,
+                        :dateutc => :game_date)
+    
+    match_data = leftjoin(match_data,data, on = [:competition_id, :season_id])
+    insertcols!(match_data, :home_team_id => 0, :away_team_id => 0)
+    for i in eachindex(match_data.season_id)
+        teams_id = names(DataFrame(match_data[i, :teamsData]))
+        match_data[i, :home_team_id] = parse(Int,teams_id[1])
+        match_data[i, :away_team_id] = parse(Int,teams_id[2])
+    end
+
+    match_data = match_data[:,[:season_id, :competition_id, :game_day, :game_id, :game_date,:home_team_id, :away_team_id]]
+
+    return match_data
+end
+
 
 """
-    function get_competitions()
+    function create_match_index()
 """
 function create_match_index()
 
@@ -124,6 +154,12 @@ for_index = """
 
     for i in eachindex(for_index.db_matches)
         tmp = get_matchs(for_index[i,:db_matches])
+
+        rename!(tmp, :wyId => :match_id,
+        :competitionId => :competition_id,
+        :seasonId => :season_id)
+
+        tmp = tmp[:, [:match_id, :competition_id, :season_id]]
         push!(list_matches,tmp)
     end
 
@@ -144,11 +180,6 @@ function get_matchs(matches::String)
     file_num = dictio[matches]
     data = DataFrame(jsontable(JSON3.read(read(zarchive.files[file_num]))))
 
-    rename!(data, :wyId => :match_id,
-        :competitionId => :competition_id,
-        :seasonId => :season_id)
-    
-    data = data[:, [:match_id, :competition_id, :season_id]]
 
     return data
 end

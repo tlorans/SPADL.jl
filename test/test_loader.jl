@@ -2,8 +2,12 @@ using SPADL
 
 test = get_events_data(:wyscout)
 
-check = test.match_index
 check = competitions(test)
+
+match_test = games(test, 524, 181248)
+
+
+
 println(check[:,:name])
 # using DataFrames
 # using ZipFile 

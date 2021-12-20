@@ -25,6 +25,7 @@ module SPADL
     lineup,
     get_df,
     competitions,
+    games,
 
     # utils 
     to_hdf
