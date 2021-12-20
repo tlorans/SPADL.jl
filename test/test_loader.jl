@@ -7,7 +7,26 @@ check = competitions(test)
 match_test = games(test, 524, 181248)
 test.match_index
 teams_test = teams(test, 2576335)
-test_lineup = lineup(test, 2576335)
+
+
+players_test = players(test, 2576335)
+
+players_test_name = players_test[27,:firstname]
+
+using Unicode
+
+unescape_string(players_test_name)
+
+
+string(unicode_name)
+players_df = get_df("players.json")
+
+
+
+using DataFrames
+
+substitution = DataFrame(df_players[1,:substitutions])
+substitution = DataFrame(df_players[1,:bench])
 
 println(check[:,:name])
 # using DataFrames

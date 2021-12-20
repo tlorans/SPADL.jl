@@ -22,11 +22,11 @@ module SPADL
     get_events_data,
     create_match_index,
     get_matchs,
-    lineup,
     get_df,
     competitions,
     games,
     teams,
+    players,
 
     # utils 
     to_hdf

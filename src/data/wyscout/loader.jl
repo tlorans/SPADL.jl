@@ -218,7 +218,58 @@ function teams(event_data::PublicWyscoutLoader, game_id::Int)
 end
 
 
+"""
+    function players()
+Return a dataframe with all players that participated in a game.
+"""
+function players(event_data::PublicWyscoutLoader, game_id::Int)
 
+    players_df = get_df("players.json")
+    players_df = convert_players(players_df)
+
+    lineups = lineup(event_data, game_id)
+
+    list_df = []
+    list_teams = collect(keys(lineups))
+    for team in list_teams
+        df_team = lineups[team]
+        df_players = DataFrame(df_team[:,:formation])
+        playerslist = DataFrame(df_players[1,:lineup])[:,:playerId]
+        substitutes = DataFrame(df_players[1,:substitutions])[:,:playerIn]
+        playerslist = vcat(playerslist, substitutes)
+        df_team = DataFrame(:game_id => game_id,
+                            :team_id => parse(Int,team),
+                            :player_id => playerslist)
+        push!(list_df, df_team)
+    end
+
+    teams_df = reduce(vcat, list_df)
+    players_df = leftjoin(teams_df, players_df, on = :player_id)
+    return players_df
+end
+
+function convert_players(data::DataFrame)
+    players_df = data[:,[:firstName, :lastName, :birthDate,
+                                :shortName,:wyId]]
+    
+    rename!(
+        players_df,
+        :firstName => :firstname,
+        :lastName => :lastname,
+        :shortName => :nickname, 
+        :birthDate => :birth_data,
+        :wyId => :player_id
+    )
+
+    names_col = [:firstname, :lastname, :nickname]
+    for col in names_col
+        players_df[:,col] = unescape_string.(players_df[:,col])
+    end
+
+    insertcols!(players_df, :player_name => string.(players_df[:,:firstname]," ",players_df[:,:lastname]))
+
+    return players_df
+end
 
 function lineup(event_data::PublicWyscoutLoader, game_id::Int)
     tmp = filter("match_id" => ==(game_id), event_data.match_index)
