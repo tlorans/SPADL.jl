@@ -1,5 +1,7 @@
 # This file contains function for automatically load event data.
 
+Base.convert(::Type{JSON3.Array}, x::Vector{JSON3.Object}) = x
+
 """
 Serializers
 """
@@ -306,20 +308,26 @@ Return a Dataframe with all events in the game
 function events(events_data::PublicWyscoutLoader, game_id::Int)
     view = filter("match_id"=> ==(game_id), events_data.match_index)[1,:db_events]
     str = get_events(view)
+    json_data = JSON3.read(str)
+    subset_json_indexes = [i for i in eachindex(json_data) if json_data[i][:matchId] == game_id]
+    subset_json = json_data[subset_json_indexes]
+    json_data = nothing
+    Base.GC.gc()
+    subset_json = DataFrame(convert(JSON3.Array,subset_json))
 
-    data = JSON3.read(str)
-    data = [copy(data[i]) for i in eachindex(data) if data[i][:matchId] == game_id]
+    # data = JSON3.read(str)
+    # data = [copy(data[i]) for i in eachindex(data) if data[i][:matchId] == game_id]
     
-    positions = [collect(data[i][:positions]) for i in eachindex(data)]
-    tags = [collect(data[i][:tags]) for i in eachindex(data)]
-    [delete!(data[i], :positions) for i in eachindex(data)]
-    [delete!(data[i], :tags) for i in eachindex(data)]
+    # positions = [collect(data[i][:positions]) for i in eachindex(data)]
+    # tags = [collect(data[i][:tags]) for i in eachindex(data)]
+    # [delete!(data[i], :positions) for i in eachindex(data)]
+    # [delete!(data[i], :tags) for i in eachindex(data)]
 
 
-    data = vcat(DataFrame.(data)...)
-    insertcols!(data, :positions => positions,
-                :tags => tags)
-    data = convert_events(data)
+    # data = vcat(DataFrame.(data)...)
+    # insertcols!(data, :positions => positions,
+    #             :tags => tags)
+    data = convert_events(subset_json)
     return data
 end
 
