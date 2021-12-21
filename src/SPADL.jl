@@ -32,12 +32,17 @@ module SPADL
     lineup,
     events,
 
+    # SPADL 
+    get_tagsdf,
+    make_new_positions,
+
     # utils 
     to_hdf
 
 
     include("data/data.jl")
     include("utils.jl")
+    include("spadl/wyscout.jl")
 
     function __init__()
 
