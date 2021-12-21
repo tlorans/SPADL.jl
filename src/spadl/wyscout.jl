@@ -243,3 +243,33 @@ function create_shot_coordinates(event_df::DataFrame)
     end
     return event_df
 end
+
+
+"""
+    function convert_duels()
+This function converts Wyscout duels that end with the ball out of field
+(subtype_id 50) into a pass for the player winning the duel to the location
+of where the ball went out of field. The remaining duels are removed as
+they are not on-the-ball actions. 
+"""
+function convert_duels(event_df::DataFrame)
+    event_df = duel_out_of_field(event_df)
+
+end
+
+function duel_out_of_field(event_df::DataFrame)
+
+    for i in eachindex(event_df.event_id)
+        if i < length(eachindex(event_df.event_id)) - 2
+            if event_df[i, :type_id] == 1 &&
+                event_df[i+1,:type_id] == 1 &&
+                # have to treat it like a string, don't achieve to drop the empty rows and translate it in number
+                event_df[i+2, :subtype_id] == "50" &&
+                event_df[i+1, :period_id] == event_df[i+2, :period_id]
+            
+            end
+        end
+    end
+
+    return event_df
+end
