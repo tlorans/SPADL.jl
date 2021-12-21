@@ -307,13 +307,19 @@ Return a Dataframe with all events in the game
 """
 function events(events_data::PublicWyscoutLoader, game_id::Int)
     view = filter("match_id"=> ==(game_id), events_data.match_index)[1,:db_events]
+    
     str = get_events(view)
-    json_data = JSON3.read(str)
-    subset_json_indexes = [i for i in eachindex(json_data) if json_data[i][:matchId] == game_id]
-    subset_json = json_data[subset_json_indexes]
-    json_data = nothing
-    Base.GC.gc()
-    subset_json = DataFrame(convert(JSON3.Array,subset_json))
+    v = LazyJSON.parse(str)
+    subset_test = subset_indexes_lazy(v, game_id)
+    result = transform_to_df(subset_test)
+    
+    # str = get_events(view)
+    # json_data = JSON3.read(str)
+    # subset_json_indexes = [i for i in eachindex(json_data) if json_data[i][:matchId] == game_id]
+    # subset_json = json_data[subset_json_indexes]
+    # json_data = nothing
+    # Base.GC.gc()
+    # subset_json = DataFrame(convert(JSON3.Array,subset_json))
 
     # data = JSON3.read(str)
     # data = [copy(data[i]) for i in eachindex(data) if data[i][:matchId] == game_id]
@@ -327,7 +333,7 @@ function events(events_data::PublicWyscoutLoader, game_id::Int)
     # data = vcat(DataFrame.(data)...)
     # insertcols!(data, :positions => positions,
     #             :tags => tags)
-    data = convert_events(subset_json)
+    data = convert_events(result)
     return data
 end
 
@@ -362,3 +368,52 @@ function lineup(event_data::PublicWyscoutLoader, game_id::Int)
 
     return data
 end
+
+
+function subset_indexes_lazy(v, game_id::Int)
+    json_data = convert(Vector{Any},v)
+    json_data = [i for i in v if i["matchId"] == game_id]
+end
+
+
+
+function transform_to_df(json_subset)
+    subset_dic = convert.(Dict, json_subset)
+
+    test_df = DataFrame(:playerId => zeros(length(subset_dic)),
+        :matchId => zeros(length(subset_dic)),
+        :eventName => "",
+        :positions => [Vector{Dict}[] for i in eachindex(subset_dic)],
+        :eventId => zeros(length(subset_dic)),
+        :subEventName => "",
+        :teamId => zeros(length(subset_dic)),
+        :id => zeros(length(subset_dic)),
+        :matchPeriod => "",
+        :subEventId => "",
+        :eventSec => zeros(length(subset_dic)),
+        :tags => [Vector{Dict}[] for i in eachindex(subset_dic)])
+
+    for i in eachindex(test_df.playerId)
+        test_df[i, :playerId] = subset_dic[i]["playerId"]
+        test_df[i, :positions] = [convert.(Dict,subset_dic[i]["positions"])]
+        test_df[i, :matchId] = subset_dic[i]["matchId"]
+        test_df[i, :eventName] = string(subset_dic[i]["eventName"])
+        test_df[i, :eventId] = subset_dic[i]["eventId"]
+        test_df[i, :subEventName] = string(subset_dic[i]["subEventName"])
+        test_df[i, :teamId] = subset_dic[i]["teamId"]
+        test_df[i, :id] = subset_dic[i]["id"]
+        test_df[i, :matchPeriod] = string(subset_dic[i]["matchPeriod"])
+        test_df[i, :subEventId] = string(subset_dic[i]["subEventId"])
+        test_df[i, :eventSec] = subset_dic[i]["eventSec"]
+        test_df[i, :tags] = [convert.(Dict,subset_dic[i]["tags"])]
+    end
+
+    return test_df
+end
+
+# function process_lazy(events::String, game_id::Int)
+#     str = get_events(events)
+#     v = LazyJSON.parse(str)
+#     subset_test = subset_indexes_lazy(v, game_id)
+#     result = transform_to_df(subset_test)
+# end

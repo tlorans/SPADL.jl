@@ -13,7 +13,7 @@ module SPADL
     using JSONTables
     using ProgressMeter
     using HDF5 
-    using Arrow
+    using LazyJSON
 
     export 
     # Types 
