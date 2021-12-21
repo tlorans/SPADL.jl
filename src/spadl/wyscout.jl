@@ -1,8 +1,23 @@
 # This file contains functions to translate dataframe events to spadl actions 
 """
+    function convert_to_actions()
+Convert Wyscout events to SPADL actions
+"""
+function convert_to_actions(event_df::DataFrame)
+    tags_df = get_tagsdf(event_df)
+    event_df = leftjoin(event_df, tags_df, on = :event_id)
+    event_df = make_new_positions(event_df)
+    event_df = fix_wyscout_events(event_df)
+
+    return event_df
+end
+
+
+
+"""
     function get_tagsdf()
 
-Represent Wyscout tags as a dataframe with a column for each tag.
+Represent Wyscout tags as a boolean dataframe with a column for each tag.
 """
 function get_tagsdf(event_df::DataFrame)
     event_df = copy(event_df)
@@ -125,7 +140,11 @@ function get_tagsdf(event_df::DataFrame)
     return tags_df
 end
 
+"""
+    function make_new_positions
 
+Return a new dataframe with start and end position as columns.
+"""
 function make_new_positions(event_df::DataFrame)
     event_df = copy(event_df)
     insertcols!(event_df, 
@@ -155,6 +174,72 @@ function make_new_positions(event_df::DataFrame)
     end
 
     event_df = event_df[:, Not(:positions)]
+    
+    event_df[:, :start_x] = clamp.(event_df[:, :start_x], 0, 105)
+    event_df[:, :end_x] = clamp.(event_df[:, :end_x], 0, 105)
+    event_df[:, :start_y] = clamp.(event_df[:, :start_y], 0, 68)
+    event_df[:, :end_y] = clamp.(event_df[:, :end_y], 0, 68)
+    return event_df
+end
 
+
+"""
+    function fix_wyscout_events()
+Perform some fixes on the Wyscout events such that the spadl action dataframe can be built. 
+"""
+function fix_wyscout_events(event_df::DataFrame)
+
+    event_df = create_shot_coordinates(event_df)
+
+end
+
+"""
+    function create_shot_coordinates()
+Create short coordinates (estimates) from Wyscout tags
+"""
+function create_shot_coordinates(event_df::DataFrame)
+    cols_pos = ["start_x","start_y","end_x","end_y"]
+    for col in cols_pos
+        event_df[!, col] = convert.(Float64, event_df[:, col])
+    end
+
+    for i in eachindex(event_df.event_id)
+        if event_df[i, :position_goal_low_center] || event_df[i, :position_goal_mid_center] || event_df[i, :position_goal_high_center]
+            event_df[i, :end_x] = 100
+            event_df[i, :end_y] = 50
+        
+        elseif event_df[i, :position_goal_low_right] || event_df[i, :position_goal_mid_right]  || event_df[i, :position_goal_high_right]
+            event_df[i, :end_x] = 100
+            event_df[i, :end_y] = 55   
+        
+        elseif event_df[i, :position_goal_mid_left] || event_df[i, :position_goal_low_left]  || event_df[i, :position_goal_high_left]
+            event_df[i, :end_x] = 100
+            event_df[i, :end_y] = 45 
+        
+        elseif event_df[i, :position_out_high_center] || event_df[i, :position_post_high_center]
+            event_df[i, :end_x] = 100
+            event_df[i, :end_y] = 50
+        
+        elseif event_df[i, :position_out_low_right] || event_df[i, :position_out_mid_right] || event_df[i, :position_out_high_right]
+            event_df[i, :end_x] = 100
+            event_df[i, :end_y] = 60
+
+        elseif event_df[i, :position_out_mid_left] || event_df[i, :position_out_low_left] || event_df[i, :position_out_high_left]
+            event_df[i, :end_x] = 100
+            event_df[i, :end_y] = 40
+
+        elseif event_df[i, :position_post_mid_left] || event_df[i, :position_post_low_left] || event_df[i, :position_post_high_left]
+            event_df[i, :end_x] = 100
+            event_df[i, :end_y] = 55.38
+
+        elseif event_df[i, :position_post_low_right] || event_df[i, :position_post_mid_right] || event_df[i, :position_post_high_right]
+            event_df[i, :end_x] = 100
+            event_df[i, :end_y] = 44.62
+        
+        elseif event_df[i, :blocked]
+            event_df[i, :end_x] = event_df[i, :start_x]
+            event_df[i, :end_y] = event_df[i, :start_y]
+        end
+    end
     return event_df
 end

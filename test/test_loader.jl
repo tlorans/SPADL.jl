@@ -22,5 +22,6 @@ using DataFrames, JSON3, JSONTables
 
 new_df = make_new_positions(events_df)
 
-check = get_tagsdf(events_df)
+@time check = get_tagsdf(events_df)
 
+@time check = convert_to_actions(events_df)

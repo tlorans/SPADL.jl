@@ -35,6 +35,7 @@ module SPADL
     # SPADL 
     get_tagsdf,
     make_new_positions,
+    convert_to_actions,
 
     # utils 
     to_hdf
