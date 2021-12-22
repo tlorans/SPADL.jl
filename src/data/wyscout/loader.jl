@@ -35,6 +35,7 @@ end
 """
 Base.@kwdef struct PublicWyscoutLoader
     match_index::DataFrame = create_match_index()
+    events_Italy::Vector{Any} = convert(Vector{Any},LazyJSON.parse(get_events("events_Italy.json")))
 end
 
 """
@@ -308,31 +309,12 @@ Return a Dataframe with all events in the game
 function events(events_data::PublicWyscoutLoader, game_id::Int)
     view = filter("match_id"=> ==(game_id), events_data.match_index)[1,:db_events]
     
-    str = get_events(view)
-    v = LazyJSON.parse(str)
-    subset_test = subset_indexes_lazy(v, game_id)
-    result = transform_to_df(subset_test)
-    
-    # str = get_events(view)
-    # json_data = JSON3.read(str)
-    # subset_json_indexes = [i for i in eachindex(json_data) if json_data[i][:matchId] == game_id]
-    # subset_json = json_data[subset_json_indexes]
-    # json_data = nothing
-    # Base.GC.gc()
-    # subset_json = DataFrame(convert(JSON3.Array,subset_json))
+    if view == "events_Italy.json"
+        subset_test = subset_indexes_lazy(events_data.events_Italy, game_id)
+        result = transform_to_df(subset_test)
+    end
 
-    # data = JSON3.read(str)
-    # data = [copy(data[i]) for i in eachindex(data) if data[i][:matchId] == game_id]
-    
-    # positions = [collect(data[i][:positions]) for i in eachindex(data)]
-    # tags = [collect(data[i][:tags]) for i in eachindex(data)]
-    # [delete!(data[i], :positions) for i in eachindex(data)]
-    # [delete!(data[i], :tags) for i in eachindex(data)]
-
-
-    # data = vcat(DataFrame.(data)...)
-    # insertcols!(data, :positions => positions,
-    #             :tags => tags)
+   
     data = convert_events(result)
     return data
 end
@@ -369,14 +351,28 @@ function lineup(event_data::PublicWyscoutLoader, game_id::Int)
     return data
 end
 
+"""
+    function subset_index_lazy 
 
+Use the vector Any v which is the JSON parsed lazily and the game_id to request data
+with matchId correspoding to the game id.
+"""
 function subset_indexes_lazy(v, game_id::Int)
-    json_data = convert(Vector{Any},v)
-    json_data = [i for i in v if i["matchId"] == game_id]
+    json_data = []
+    @inbounds for i in eachindex(v)
+        if v[i]["matchId"] == game_id 
+            push!(json_data, v[i])
+        end
+    end 
+    return json_data
 end
 
 
+"""
+    function transform_to_df
 
+A specialised function to transform the requested subpart of the JSON event to a DataFrame.
+"""
 function transform_to_df(json_subset)
     subset_dic = convert.(Dict, json_subset)
 
