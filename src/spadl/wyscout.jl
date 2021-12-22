@@ -253,23 +253,33 @@ of where the ball went out of field. The remaining duels are removed as
 they are not on-the-ball actions. 
 """
 function convert_duels(event_df::DataFrame)
-    event_df = duel_out_of_field(event_df)
-
-end
-
-function duel_out_of_field(event_df::DataFrame)
 
     for i in eachindex(event_df.event_id)
         if i < length(eachindex(event_df.event_id)) - 2
-            if event_df[i, :type_id] == 1 &&
-                event_df[i+1,:type_id] == 1 &&
-                # have to treat it like a string, don't achieve to drop the empty rows and translate it in number
-                event_df[i+2, :subtype_id] == "50" &&
-                event_df[i+1, :period_id] == event_df[i+2, :period_id]
-            
+            if selector_duel_out_of_field(event_df[i, :type_id],
+                                            event_df[i+1, :type_id],
+                                            event_df[i+2, :subtype_id],
+                                            event_df[i, :period_id],
+                                            event_df[i+2, :period_id])
+                println("ok")
             end
         end
     end
 
-    return event_df
+end
+
+function selector_duel_out_of_field(type_id::Union{Float64, Int}, type_id_t_plus_1::Union{Float64,Int}, subtype_id_t_plus_2::String,period_id::String, period_id_t_plus_2::String)
+
+    if type_id == 1 &&
+        type_id_t_plus_1 == 1 &&
+        # have to treat it like a string, don't achieve to drop the empty rows and translate it in number
+        subtype_id_t_plus_2 == "50" &&
+        period_id == period_id_t_plus_2
+        result =  true
+
+    else 
+        result = false
+    end
+
+    return result
 end

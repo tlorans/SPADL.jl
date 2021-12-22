@@ -36,7 +36,8 @@ module SPADL
     get_tagsdf,
     make_new_positions,
     convert_to_actions,
-    duel_out_of_field,
+    convert_duels,
+
 
     # utils 
     to_hdf
