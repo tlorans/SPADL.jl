@@ -14,9 +14,7 @@ events_test = "events_Italy.json"
 str = get_events(events_test)
 v = LazyJSON.parse(str);
 v = convert(Vector{Any},v)
-
-
-
+# @time subset_indexes_lazy(v, 2576336)
 """
     function convert_events()
 """
@@ -45,13 +43,21 @@ end
 Use the vector Any v which is the JSON parsed lazily and the game_id to request data
 with matchId correspoding to the game id.
 """
-function subset_indexes_lazy(v, game_id::Int)
-    json_data = []
+function subset_indexes_lazy(v::Vector{Any}, game_id::Int) 
+    json_data = Vector{Any}()
     @inbounds for i in eachindex(v)
         if v[i]["matchId"] == game_id 
             push!(json_data, v[i])
         end
     end    
+    # json_data = Vector(Any, 2000)
+    # count = 0
+    # @inbounds for i in eachindex(v)
+    #     if v[i]["matchId"] == game_id 
+    #         count += 1
+    #         json_data[count] = v[i]
+    #     end
+    # end
     return json_data
 end
 
@@ -106,6 +112,6 @@ function events(events_Italy, game_id::Int)
 end
 
 
-@time events(v, 2576335)
+@time events(v, 2576337)
 
 

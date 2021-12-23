@@ -1,6 +1,7 @@
 # This file contains functions to translate dataframe events to spadl actions 
 """
     function convert_to_actions()
+
 Convert Wyscout events to SPADL actions
 """
 function convert_to_actions(event_df::DataFrame)
@@ -185,6 +186,7 @@ end
 
 """
     function fix_wyscout_events()
+
 Perform some fixes on the Wyscout events such that the spadl action dataframe can be built. 
 """
 function fix_wyscout_events(event_df::DataFrame)
@@ -195,6 +197,7 @@ end
 
 """
     function create_shot_coordinates()
+
 Create short coordinates (estimates) from Wyscout tags
 """
 function create_shot_coordinates(event_df::DataFrame)
@@ -247,6 +250,7 @@ end
 
 """
     function convert_duels()
+        
 This function converts Wyscout duels that end with the ball out of field
 (subtype_id 50) into a pass for the player winning the duel to the location
 of where the ball went out of field. The remaining duels are removed as
@@ -268,6 +272,10 @@ function convert_duels(event_df::DataFrame)
 
 end
 
+"""
+    function selector_duel_out_of_field
+Define selector for duels that are followed by an 'out of field' event.
+"""
 function selector_duel_out_of_field(type_id::Union{Float64, Int}, type_id_t_plus_1::Union{Float64,Int}, subtype_id_t_plus_2::String,period_id::String, period_id_t_plus_2::String)
 
     if type_id == 1 &&
