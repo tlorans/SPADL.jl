@@ -19,10 +19,10 @@ end
 function selector_duel_out_of_field
 Define selector for duels that are followed by an 'out of field' event.
 """
-function selector_duel_out_of_fiel(event_df::PublicWyscoutEvents)::PublicWyscoutEvents
+function selector_duel_out_of_field(event_df::PublicWyscoutEvents)::PublicWyscoutEvents
 
     data = event_df.data
-    insertcols!(data, :selector_duel_out_of_fiel => false)
+    insertcols!(data, :selector_duel_out_of_field => false)
 
     for i in eachindex(data.event_id)
         if i < length(eachindex(data.event_id)) - 2 
@@ -31,7 +31,7 @@ function selector_duel_out_of_fiel(event_df::PublicWyscoutEvents)::PublicWyscout
                 data[i+2, :subtype_id] == "50" &&
                 data[i, :period_id] == data[i+2, :period_id]
             
-            data[i, :selector_duel_out_of_fiel] = true
+            data[i, :selector_duel_out_of_field] = true
             end 
         end
     end
@@ -53,7 +53,7 @@ function selector0_duel_won(event_df::PublicWyscoutEvents)::PublicWyscoutEvents
 
     for i in eachindex(data.event_id)
         if i < length(eachindex(data.event_id)) - 2 
-            if data[i, :selector_duel_out_of_fiel] &&
+            if data[i, :selector_duel_out_of_field] &&
                 data[i, :team_id] != data[i+2, :team_id]
             
                 data[i, :selector0_duel_won] = true
