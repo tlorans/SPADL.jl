@@ -17,7 +17,7 @@ module SPADL
 
     export 
     # Types 
-    WyscoutPublic,
+    PublicWyscoutEvents,
 
     # Serializers
     get_events_data,
@@ -37,6 +37,7 @@ module SPADL
     make_new_positions,
     convert_to_actions,
     convert_duels,
+    fix_events,
 
 
     # utils 

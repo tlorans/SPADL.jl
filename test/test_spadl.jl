@@ -7,3 +7,5 @@ test = get_events(test, "events_Italy.json")
 
 @time events_df = events(test, 2576336)
 
+typeof(events_df)
+@time check = convert_to_actions(events_df)

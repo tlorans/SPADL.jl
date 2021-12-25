@@ -1,13 +1,12 @@
 # This file contains functions to return DataFrame with boolean for tags
 
-
 """
 function get_tagsdf()
 
 Represent tags as a boolean dataframe with a column for each tag.
 """
 function get_tagsdf(event_df::PublicWyscoutEvents)
-    event_df = copy(event_df)
+    event_df = copy(event_df.data)
     wyscout_tags = Dict(
         (101 => "goal"),
         (102 => "own_goal"),
