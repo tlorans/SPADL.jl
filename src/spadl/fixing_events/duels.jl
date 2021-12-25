@@ -9,7 +9,6 @@ they are not on-the-ball actions.
 """
 function convert_duels(event_df::PublicWyscoutEvents)::PublicWyscoutEvents
 
-    event_df = copy(event_df)
     event_df = selector_duel_out_of_fiel(event_df)
     event_df = selector0_duel_won(event_df)
 

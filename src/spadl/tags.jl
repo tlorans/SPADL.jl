@@ -1,13 +1,10 @@
 # This file contains functions to return DataFrame with boolean for tags
 
 """
-function get_tagsdf()
-
-Represent tags as a boolean dataframe with a column for each tag.
+    PublicWyscoutTags
 """
-function get_tagsdf(event_df::PublicWyscoutEvents)
-    event_df = copy(event_df.data)
-    wyscout_tags = Dict(
+Base.@kwdef mutable struct PublicWyscoutTags 
+    wyscout_tags::Dict = Dict(
         (101 => "goal"),
         (102 => "own_goal"),
         (301 => "assit"),
@@ -68,31 +65,42 @@ function get_tagsdf(event_df::PublicWyscoutEvents)
         (1801 => "accurate"),
         (1802 => "not_accurate")
     )
+    data::DataFrame
+end
 
+"""
+function get_tagsdf()
 
-    wyscout_tags_df = DataFrame(:tags => collect(keys(wyscout_tags)), 
-                                :tags_name => collect(values(wyscout_tags)))
+Represent tags as a boolean dataframe with a column for each tag.
+"""
+function get_tagsdf(event_df::PublicWyscoutEvents)::PublicWyscoutTags
+    
+
+    tagsdf = PublicWyscoutTags(data = copy(event_df.data))
+
+    wyscout_tags_df = DataFrame(:tags => collect(keys(tagsdf.wyscout_tags)), 
+                                :tags_name => collect(values(tagsdf.wyscout_tags)))
 
 
     # we initialize the boolean tags_df dataframe
-    tags_df = DataFrame(:event_id => unique(event_df[:, :event_id]))
-    col_names = collect(values(wyscout_tags))
+    tags_df = DataFrame(:event_id => unique(tagsdf.data[:, :event_id]))
+    col_names = collect(values(tagsdf.wyscout_tags))
     insertcols!(tags_df, (col_names .=> false)...)
 
     # make the tags out of the vector of dictionnaries 
     result_tags = []
     result_event_id = []
-    for i in eachindex(event_df.tags)
+    for i in eachindex(tagsdf.data.tags)
         tmp_tags = 0
         tmp_event_id = 0
         # if size of vector of dictionnary only one, we just need to take it 
-        if length(event_df[i,:tags][1]) ==1
-            tmp_tags = convert(Int,event_df[i,:tags][1][1]["id"])
-            tmp_event_id = event_df[i,:event_id]
+        if length(tagsdf.data[i,:tags][1]) ==1
+            tmp_tags = convert(Int,tagsdf.data[i,:tags][1][1]["id"])
+            tmp_event_id = tagsdf.data[i,:event_id]
         # if more than one, we need to make it a vector
-        elseif length(event_df[i,:tags][1]) > 1
-            tmp_tags = [convert(Int,event_df[i,:tags][1][j]["id"]) for j in eachindex(event_df[i,:tags][1])]
-            tmp_event_id = [event_df[i,:event_id] for j in eachindex(event_df[i,:tags][1])]
+        elseif length(tagsdf.data[i,:tags][1]) > 1
+            tmp_tags = [convert(Int,tagsdf.data[i,:tags][1][j]["id"]) for j in eachindex(tagsdf.data[i,:tags][1])]
+            tmp_event_id = [tagsdf.data[i,:event_id] for j in eachindex(tagsdf.data[i,:tags][1])]
         end
         push!(result_tags, tmp_tags)
         push!(result_event_id, tmp_event_id)
@@ -104,24 +112,25 @@ function get_tagsdf(event_df::PublicWyscoutEvents)
                             :tags => result_tags)
 
     # then we can drop the previous tags
-    event_df = event_df[:, Not(:tags)]
+    tagsdf.data = tagsdf.data[:, Not(:tags)]
     # and make a new dataframe with one tag (id) per line                        
-    event_df = leftjoin(result_df, event_df, on = :event_id)
+    tagsdf.data = leftjoin(result_df, tagsdf.data, on = :event_id)
 
     # now we will join event_df with our wyscout_df 
-    event_df = leftjoin(event_df, wyscout_tags_df, on = :tags)
+    tagsdf.data = leftjoin(tagsdf.data, wyscout_tags_df, on = :tags)
     insertcols!(tags_df, :row_id => [i for i in eachindex(tags_df.event_id)])
     # now we will populate the tags_df dataframe 
-    for i in eachindex(event_df.event_id)
-        ids = event_df[i, :event_id]
+    for i in eachindex(tagsdf.data.event_id)
+        ids = tagsdf.data[i, :event_id]
         tmp = filter("event_id" => ==(ids), tags_df)
         if size(tmp,1)>0
             nbr_row = tmp[1,:row_id]
-            tags_name = event_df[i, :tags_name]
+            tags_name = tagsdf.data[i, :tags_name]
             tags_df[nbr_row, tags_name] = true
         end
     end
 
+    tagsdf.data = tags_df
 
-    return tags_df
+    return tagsdf
 end
