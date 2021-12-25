@@ -45,7 +45,7 @@ module SPADL
 
     include("data/data.jl")
     include("utils.jl")
-    include("spadl/wyscout.jl")
+    include("spadl/spadl.jl")
 
     function __init__()
 

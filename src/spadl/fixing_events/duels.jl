@@ -7,7 +7,7 @@ This function converts Wyscout duels that end with the ball out of field
 of where the ball went out of field. The remaining duels are removed as
 they are not on-the-ball actions. 
 """
-function convert_duels(event_df::DataFrame)
+function convert_duels(event_df::PublicWyscoutEvents)
 
 for i in eachindex(event_df.event_id)
     if i < length(eachindex(event_df.event_id)) - 2

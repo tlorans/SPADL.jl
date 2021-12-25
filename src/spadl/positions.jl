@@ -1,10 +1,11 @@
+# This file contains functions to create new positions.
 
 """
 function make_new_positions
 
 Return a new dataframe with start and end position as columns.
 """
-function make_new_positions(event_df::DataFrame)
+function make_new_positions(event_df::PublicWyscoutEvents)
 event_df = copy(event_df)
 insertcols!(event_df, 
             :start_x => 0,

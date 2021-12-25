@@ -1,10 +1,11 @@
+# This file contains functions to create shot coordinates.
 
 """
 function create_shot_coordinates()
 
 Create short coordinates (estimates) from Wyscout tags
 """
-function create_shot_coordinates(event_df::DataFrame)
+function create_shot_coordinates(event_df::PublicWyscoutEvents)
 cols_pos = ["start_x","start_y","end_x","end_y"]
 for col in cols_pos
     event_df[!, col] = convert.(Float64, event_df[:, col])
