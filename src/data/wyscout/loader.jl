@@ -357,8 +357,8 @@ end
 Use the vector Any v which is the JSON parsed lazily and the game_id to request data
 with matchId correspoding to the game id.
 """
-function subset_indexes_lazy(v, game_id::Int)
-    json_data = []
+function subset_indexes_lazy(v::Vector{Any}, game_id::Int)
+    json_data = Vector{Any}()
     @inbounds for i in eachindex(v)
         if v[i]["matchId"] == game_id 
             push!(json_data, v[i])
