@@ -23,4 +23,5 @@ test = get_events(test, "events_Italy.json")
 
 @time events_df = events(test, 2576336)
 
+events_df[1]
 

@@ -17,7 +17,7 @@ module SPADL
 
     export 
     # Types 
-    PublicWyscoutEvents,
+    WyscoutEvent,
 
     # Serializers
     get_events_data,
@@ -33,11 +33,11 @@ module SPADL
     events,
 
     # SPADL 
-    get_tagsdf,
-    make_new_positions,
-    convert_to_actions,
-    convert_duels,
-    fix_events,
+    get_tags,
+    # make_new_positions,
+    # convert_to_actions,
+    # convert_duels,
+    # fix_events,
 
 
     # utils 
@@ -45,7 +45,7 @@ module SPADL
 
 
     include("data/data.jl")
-    include("utils.jl")
+    # include("utils.jl")
     include("spadl/spadl.jl")
 
     function __init__()
