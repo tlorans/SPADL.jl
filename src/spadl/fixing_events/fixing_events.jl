@@ -1,9 +1,9 @@
 # This file contains functions to fix events.
 
 include("shot_coordinates.jl")
-include("duels.jl")
-include("offsides.jl")
-include("interceptions.jl")
+# include("duels.jl")
+# include("offsides.jl")
+# include("interceptions.jl")
 
 
 """
@@ -11,9 +11,9 @@ include("interceptions.jl")
 
 Perform some fixes on the events such that the spadl action dataframe can be built. 
 """
-function fix_events(event_df::PublicWyscoutEvents)
+function fix_events(spadl_df::Vector{RegularSPADL}, tags_df::Vector{WyscoutEventTags}, event_df::Vector{WyscoutEvent})::Vector{RegularSPADL}
 
-    event_df = create_shot_coordinates(event_df)
-    event_df = convert_duels(event_df)
+    spadl_df = create_shot_coordinates(spadl_df, tags_df)
+    # event_df = convert_duels(event_df)
 
 end

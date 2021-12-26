@@ -28,7 +28,7 @@ include("tags.jl")
 include("actions.jl")
 include("positions.jl")
 # include("fixing_actions/fixing_actions.jl")
-# include("fixing_events/fixing_events.jl")
+include("fixing_events/fixing_events.jl")
 
 
 """
