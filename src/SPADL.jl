@@ -35,7 +35,7 @@ module SPADL
     # SPADL 
     get_tags,
     # make_new_positions,
-    # convert_to_actions,
+    convert_to_actions,
     # convert_duels,
     # fix_events,
 

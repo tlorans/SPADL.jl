@@ -7,12 +7,12 @@ test = get_events(test, "events_Italy.json")
 
 @time events_df = events(test, 2576336)
 
-events_df[1].tags[1]["id"]
+length(events_df[1].positions)
 
+positi
 
-@time check = get_tags(events_df)
+# @time check = get_tags(events_df)
 
-using DataFrames
 @time check = convert_to_actions(events_df)
 
 view_check = check.data

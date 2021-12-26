@@ -1,8 +1,5 @@
 # This file contains functions to return DataFrame with boolean for tags
 
-
-
-
 """
     WyscoutEventTags
 """
@@ -67,7 +64,10 @@ Base.@kwdef mutable struct WyscoutEventTags
     not_accurate::Bool = false
 end
 
+"""
+    function get_tags()
 
+"""
 function get_tags(events_data::Vector{WyscoutEvent})::Vector{WyscoutEventTags}
 
     vector_tags = Vector{WyscoutEventTags}()
@@ -145,70 +145,3 @@ function get_tags(events_data::Vector{WyscoutEvent})::Vector{WyscoutEventTags}
 
     return vector_tags
 end
-
-"""
-function get_tagsdf()
-
-Represent tags as a boolean dataframe with a column for each tag.
-# """
-# function get_tagsdf(event_df::PublicWyscoutEvents)::PublicWyscoutTags
-    
-
-#     tagsdf = PublicWyscoutTags(data = copy(event_df.data))
-
-#     wyscout_tags_df = DataFrame(:tags => collect(keys(tagsdf.wyscout_tags)), 
-#                                 :tags_name => collect(values(tagsdf.wyscout_tags)))
-
-
-#     # we initialize the boolean tags_df dataframe
-#     tags_df = DataFrame(:event_id => unique(tagsdf.data[:, :event_id]))
-#     col_names = collect(values(tagsdf.wyscout_tags))
-#     insertcols!(tags_df, (col_names .=> false)...)
-
-#     # make the tags out of the vector of dictionnaries 
-#     result_tags = []
-#     result_event_id = []
-#     for i in eachindex(tagsdf.data.tags)
-#         tmp_tags = 0
-#         tmp_event_id = 0
-#         # if size of vector of dictionnary only one, we just need to take it 
-#         if length(tagsdf.data[i,:tags][1]) ==1
-#             tmp_tags = convert(Int,tagsdf.data[i,:tags][1][1]["id"])
-#             tmp_event_id = tagsdf.data[i,:event_id]
-#         # if more than one, we need to make it a vector
-#         elseif length(tagsdf.data[i,:tags][1]) > 1
-#             tmp_tags = [convert(Int,tagsdf.data[i,:tags][1][j]["id"]) for j in eachindex(tagsdf.data[i,:tags][1])]
-#             tmp_event_id = [tagsdf.data[i,:event_id] for j in eachindex(tagsdf.data[i,:tags][1])]
-#         end
-#         push!(result_tags, tmp_tags)
-#         push!(result_event_id, tmp_event_id)
-#     end
-#     # results are a mix of unique tags and vector, we need to reduce
-#     result_tags = reduce(vcat, result_tags)
-#     result_event_id = reduce(vcat, result_event_id)
-#     result_df = DataFrame(:event_id => result_event_id,
-#                             :tags => result_tags)
-
-#     # then we can drop the previous tags
-#     tagsdf.data = tagsdf.data[:, Not(:tags)]
-#     # and make a new dataframe with one tag (id) per line                        
-#     tagsdf.data = leftjoin(result_df, tagsdf.data, on = :event_id)
-
-#     # now we will join event_df with our wyscout_df 
-#     tagsdf.data = leftjoin(tagsdf.data, wyscout_tags_df, on = :tags)
-#     insertcols!(tags_df, :row_id => [i for i in eachindex(tags_df.event_id)])
-#     # now we will populate the tags_df dataframe 
-#     for i in eachindex(tagsdf.data.event_id)
-#         ids = tagsdf.data[i, :event_id]
-#         tmp = filter("event_id" => ==(ids), tags_df)
-#         if size(tmp,1)>0
-#             nbr_row = tmp[1,:row_id]
-#             tags_name = tagsdf.data[i, :tags_name]
-#             tags_df[nbr_row, tags_name] = true
-#         end
-#     end
-
-#     tagsdf.data = tags_df
-
-#     return tagsdf
-# end

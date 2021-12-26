@@ -3,45 +3,23 @@
 """
 function make_new_positions
 
-Return a new dataframe with start and end position as columns.
+Return a new vector of SPADL.
 """
-function make_new_positions(event_df::PublicWyscoutEvents)::PublicWyscoutEvents
-    data = copy(event_df.data)
+function make_new_positions(spadl_df::Vector{RegularSPADL},event_df::Vector{WyscoutEvent})::Vector{RegularSPADL}
 
-    insertcols!(data, 
-                :start_x => 0,
-                :start_y => 0,
-                :end_x => 0,
-                :end_y => 0)
-
-
-    for i in eachindex(data.game_id)
-        if length(data[i,:positions][1]) == 2
-            data[i, :start_x] = data[i,:positions][1][1]["x"]
-            data[i, :start_y] = data[i,:positions][1][1]["y"]
-            data[i, :end_x] = data[i,:positions][1][2]["x"]
-            data[i, :end_y] = data[i,:positions][1][2]["y"] 
-        elseif  length(data[i,:positions][1]) == 1
-            data[i, :start_x] = data[i,:positions][1][1]["x"]
-            data[i, :start_y] = data[i,:positions][1][1]["y"]
-            data[i, :end_x] = data[i, :start_x]
-            data[i, :end_y] = data[i, :start_y]
-        else 
-            data[i, :start_x] = missing
-            data[i, :start_y] = missing
-            data[i, :end_x] = missing
-            data[i, :end_y] = missing
-        end           
+    for i in eachindex(event_df)
+        if length(event_df[i].positions) == 2
+            spadl_df[i].start_x = clamp(event_df[i].positions[1]["x"], 0, 105)
+            spadl_df[i].start_y = clamp(event_df[i].positions[1]["y"], 0, 68)
+            spadl_df[i].end_x = clamp(event_df[i].positions[2]["x"], 0, 105)
+            spadl_df[i].end_y = clamp(event_df[i].positions[2]["y"], 0, 68)
+        elseif length(event_df[i].positions) == 1
+            spadl_df[i].start_x = clamp(event_df[i].positions[1]["x"], 0, 105)
+            spadl_df[i].start_y = clamp(event_df[i].positions[1]["y"], 0, 68)
+            spadl_df[i].end_x = clamp(spadl_df[i].start_x, 0, 105)
+            spadl_df[i].end_y = clamp(spadl_df[i].start_y, 0, 68)
+        end
     end
 
-    data = data[:, Not(:positions)]
-
-    data[:, :start_x] = clamp.(data[:, :start_x], 0, 105)
-    data[:, :end_x] = clamp.(data[:, :end_x], 0, 105)
-    data[:, :start_y] = clamp.(data[:, :start_y], 0, 68)
-    data[:, :end_y] = clamp.(data[:, :end_y], 0, 68)
-
-    event_df.data = data
-    
-    return event_df
+    return spadl_df
 end
