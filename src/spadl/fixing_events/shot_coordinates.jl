@@ -33,7 +33,7 @@ function create_shot_coordinates(spadl_df::Vector{RegularSPADL}, tags_df::Vector
         elseif tags_df[i].position_post_low_right || tags_df[i].position_post_mid_right || tags_df[i].position_post_high_right
             spadl_df[i].end_x = 100
             spadl_df[i].end_y = 44.62
-        else if tags_df[i].blocked 
+        elseif tags_df[i].blocked 
             spadl_df[i].end_x = spadl_df[i].start_x
             spadl_df[i].end_y = spadl_df[i].start_y
         end

@@ -1,7 +1,7 @@
 # This file contains functions to fix events.
 
 include("shot_coordinates.jl")
-# include("duels.jl")
+include("duels.jl")
 # include("offsides.jl")
 # include("interceptions.jl")
 
