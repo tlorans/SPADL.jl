@@ -6,6 +6,7 @@
 Base.@kwdef mutable struct PublicWyscoutLoader
     match_index::Union{DataFrame,Nothing} = nothing
     events::Union{Vector{Any}, Nothing} = nothing
+    path::String # where files are located
 end
 
 
@@ -74,7 +75,7 @@ for_index = """
     list_matches = []
 
     for i in eachindex(for_index.db_matches)
-        tmp = get_matchs(for_index[i,:db_matches])
+        tmp = get_matchs(loader, for_index[i,:db_matches])
 
         rename!(tmp, :wyId => :match_id,
         :competitionId => :competition_id,
@@ -98,7 +99,7 @@ end
     function get_events()
 """
 function get_events(loader::PublicWyscoutLoader, str::String)::PublicWyscoutLoader
-    zarchive = ZipFile.Reader("/tmp/events.zip")
+    zarchive = ZipFile.Reader(joinpath(loader.path,"events.zip"))
     dictio = Dict(zarchive.files[i].name => i for i in eachindex(zarchive.files))
     file_num = dictio[str]
     str = read(zarchive.files[file_num])

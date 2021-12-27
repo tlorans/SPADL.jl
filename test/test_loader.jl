@@ -1,6 +1,6 @@
 using SPADL
 
-@time get_events_data(:wyscout)
+@time test = get_events_data(:wyscout, download = false, path = "wyscout_data")
 
 
 GC.gc()
@@ -20,9 +20,9 @@ teams_test = teams(test, 2576335)
 players_test = players(test, 2576335)
 
 # we have to update the loader first
-test = get_events(test, "events_Italy.json")
+@time test = get_events(test, "events_Italy.json");
 
-@time events_df = events(test, 2576336)
+@time events_df = events(test, 2576336);
 
 events_df[1]
 

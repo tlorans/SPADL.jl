@@ -43,9 +43,9 @@ end
 """
     function get_matchs()
 """
-function get_matchs(matches::String)
+function get_matchs(loader::PublicWyscoutLoader,matches::String)
 
-    zarchive = ZipFile.Reader("/tmp/matches.zip")
+    zarchive = ZipFile.Reader(joinpath(loader.path,"matches.zip"))
     dictio = Dict(zarchive.files[i].name => i for i in eachindex(zarchive.files))
     file_num = dictio[matches]
     data = DataFrame(jsontable(JSON3.read(read(zarchive.files[file_num]))))
