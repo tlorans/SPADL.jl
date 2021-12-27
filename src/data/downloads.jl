@@ -21,9 +21,9 @@ end
 """
 function download_repo(data_loader::PublicWyscoutURLs, path::String)
 
-    HTTP.download(data_loader.competitions_url, local_path = path)
-    HTTP.download(data_loader.events_url, local_path = path)
-    HTTP.download(data_loader.matches_url,local_path = path)
-    HTTP.download(data_loader.players_url, local_path = path)
-    HTTP.download(data_loader.teams_url, local_path = path)
+    HTTP.download(data_loader.competitions_url, path)
+    HTTP.download(data_loader.events_url, path)
+    HTTP.download(data_loader.matches_url, path)
+    HTTP.download(data_loader.players_url, path)
+    HTTP.download(data_loader.teams_url, path)
 end

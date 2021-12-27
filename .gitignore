@@ -1,2 +1,3 @@
 /Manifest.toml
-/wyscoutdata.sqlite
+/wyscout_data
+/.vscode

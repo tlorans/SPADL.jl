@@ -1,6 +1,7 @@
 using SPADL
 
-@time test = get_events_data(:wyscout)
+@time get_events_data(:wyscout)
+
 
 GC.gc()
 

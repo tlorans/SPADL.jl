@@ -129,8 +129,8 @@ function duel_types_and_subtypes(selectors::Dict, spadl_df::Vector{RegularSPADL}
             tags_df[i].accurate = false 
             tags_df[i].not_accurate = true
         end
-        if selectors["selector_duel_won"][i]
-            spadl_df
+        # if selectors["selector_duel_won"][i]
+        #     spadl_df
     end
 
 end

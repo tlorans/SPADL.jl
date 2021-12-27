@@ -14,6 +14,7 @@ module SPADL
     using ProgressMeter
     using HDF5 
     using LazyJSON
+    using Downloads
 
     export 
     # Types 

@@ -12,14 +12,15 @@ include("events.jl")
 """
     function get_events_data()
 """
-function get_events_data(source::Symbol; path::String = "/data")
+function get_events_data(source::Symbol; download::Bool = true, path::String = "wyscout_data")
 
+    mkdir(path)
     if source == :wyscout 
         event_data_urls = PublicWyscoutURLs()
-        download_repo(event_data_urls, path)
+        if download download_repo(event_data_urls, path) end
         loader = PublicWyscoutLoader()
         loader = create_match_index(loader)
     end
 
-    return loader
+    # return loader
 end
