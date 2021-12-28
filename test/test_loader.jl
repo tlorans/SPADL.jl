@@ -1,5 +1,6 @@
 using SPADL
 
+
 @time test = get_events_data(:wyscout, download = false, path = "wyscout_data")
 
 
@@ -8,6 +9,7 @@ GC.gc()
 
 
 check = competitions(test)
+
 
 
 

@@ -5,7 +5,7 @@
     PublicWyscoutCompetitions
 """
 Base.@kwdef mutable struct PublicWyscoutCompetitions 
-    data::DataFrame = get_df("competitions.json")
+    data::DataFrame
 end
 
 
@@ -14,7 +14,7 @@ function competitions()
 Return a dataframe with all available competitions and seasons in PublicWyscoutLoader
 """
 function competitions(events_data::PublicWyscoutLoader)::PublicWyscoutCompetitions
-    competitions_data = PublicWyscoutCompetitions()
+    competitions_data = PublicWyscoutCompetitions(data = get_df(joinpath(events_data.path, "competitions.json")))
 
     rename!(competitions_data.data, :wyId => :competition_id, :name => :competition_name)
 

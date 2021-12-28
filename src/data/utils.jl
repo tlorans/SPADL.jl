@@ -17,9 +17,9 @@ end
 """
     function get_df()
 """
-function get_df(file::String)
+function get_df(path::String)
 
-    data = DataFrame(jsontable(JSON3.read(read(string("/tmp/",file)))))
+    data = DataFrame(jsontable(JSON3.read(read(path))))
 
     return data
 end
