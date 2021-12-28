@@ -6,7 +6,7 @@
     PublicWyscoutPlayers
 """
 Base.@kwdef mutable struct PublicWyscoutPlayers 
-    data::DataFrame = get_df("players.json")
+    data::DataFrame
 end
 
 """
@@ -15,7 +15,7 @@ Return a dataframe with all players that participated in a game.
 """
 function players(event_data::PublicWyscoutLoader, game_id::Int)::PublicWyscoutPlayers
 
-    players_data = PublicWyscoutPlayers()
+    players_data = PublicWyscoutPlayers(data = get_df(joinpath(event_data.path, "players.json")))
     players_data = convert_players(players_data)
 
     lineups = lineup(event_data, game_id)
