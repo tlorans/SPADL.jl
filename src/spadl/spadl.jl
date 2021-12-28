@@ -27,8 +27,9 @@ end
 include("tags.jl")
 include("actions.jl")
 include("positions.jl")
-# include("fixing_actions/fixing_actions.jl")
 include("fixing_events/fixing_events.jl")
+include("fixing_events/shot_coordinates.jl")
+include("fixing_events/duels.jl")
 
 
 """
@@ -45,3 +46,17 @@ function convert_to_spadl(event_df::Vector{WyscoutEvent})::Vector{RegularSPADL}
 
     return action_df
 end
+
+
+
+# """
+#     function fix_events()
+
+# Perform some fixes on the events such that the spadl action dataframe can be built. 
+# """
+# function fix_events(spadl_df::Vector{RegularSPADL}, tags_df::Vector{WyscoutEventTags}, event_df::Vector{WyscoutEvent})::Vector{RegularSPADL}
+
+#     spadl_df = create_shot_coordinates(spadl_df, tags_df)
+#     # event_df = convert_duels(event_df)
+
+# end
