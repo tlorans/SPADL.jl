@@ -18,7 +18,7 @@ function games(events_data::PublicWyscoutLoader, competition_id::Int, season_id:
     data = filter("season_id"=> ==(season_id), data)
     data = unique(data[:,[:competition_id, :season_id, :db_matches]])
 
-    match_data = get_matchs(data[1,:db_matches])
+    match_data = get_matchs(events_data, data[1,:db_matches])
     rename!(match_data, :seasonId => :season_id,
                         :gameweek => :game_day,
                         :competitionId => :competition_id,
