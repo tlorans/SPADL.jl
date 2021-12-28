@@ -7,11 +7,11 @@ This function converts Wyscout duels that end with the ball out of field
 of where the ball went out of field. The remaining duels are removed as
 they are not on-the-ball actions. 
 """
-function convert_duels(event_df::Vector{WyscoutEvent})
+function convert_duels(event_df::Vector{WyscoutEvent}, tags_df::Vector{WyscoutEventTags})
 
     selectors = selector_duel_out_of_field(event_df)
     selectors = selector_duel_won(selectors, event_df)
-    # event_df = duel_types_and_subtypes(event_df)
+    # event_df = duel_types_and_subtypes(selectors, event_df, tags_df)
 
 
     # # Remove the remaining duels
