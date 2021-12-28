@@ -5,7 +5,7 @@
     PublicWyscoutTeams
 """
 Base.@kwdef mutable struct PublicWyscoutTeams
-    data::DataFrame = get_df("teams.json")
+    data::DataFrame
 end
 
 """
@@ -15,7 +15,7 @@ Return a dataframe with both teams that participated in a game.
 """
 function teams(event_data::PublicWyscoutLoader, game_id::Int)::PublicWyscoutTeams
 
-    teams_data = PublicWyscoutTeams()
+    teams_data = PublicWyscoutTeams(data = get_df(joinpath(event_data.path, "teams.json")))
     rename!(teams_data.data, :name => :team_name_short,
                         :officialName => :team_name,
                         :wyId => :team_id)
