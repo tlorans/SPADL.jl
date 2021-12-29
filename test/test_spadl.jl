@@ -17,6 +17,14 @@ events_df
 
 
 @time check = (convert_to_actions(events_df))
+using DataFrames
+
+view = []
+for i in eachindex(check)
+    tmp = (check[i].event_fixed)
+    push!(view, tmp)
+end
+view = DataFrame(view)
 
 
 check[:selector_duel_won]

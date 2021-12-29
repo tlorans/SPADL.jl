@@ -7,7 +7,7 @@ Perform some fixes on the events such that the spadl action dataframe can be bui
 function fix_events(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
     vector_wyscout_data = create_shot_coordinates(vector_wyscout_data)
     vector_wyscout_data = convert_duels(vector_wyscout_data)
-    # vector_wyscout_data = insert_interception_passes(vector_wyscout_data)
+    vector_wyscout_data = insert_interception_passes(vector_wyscout_data)
 end
 
 
@@ -129,19 +129,21 @@ first an interception and then a pass.
 """
 function insert_interception_passes(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
 
+    new_vector_wyscout_data = Vector{WyscoutData}()
+
     for i in eachindex(vector_wyscout_data)
-    
-        interception = vector_wyscout_data[i].tags.interception && vector_wyscout_data.event_fixed.type_id == 8
+        
+        push!(new_vector_wyscout_data, vector_wyscout_data[i])
+        interception = vector_wyscout_data[i].tags.interception && vector_wyscout_data[i].event_fixed.type_id == 8
         
         if interception
-            tags = WyscoutEventTags(interception = true)
-            new_wyscout_data = copy(vector_wyscout_data[i])
+            new_wyscout_data = vector_wyscout_data[i]
+            new_wyscout_data.tags.interception = true
             new_wyscout_data.event_fixed.type_id = 0 
             new_wyscout_data.event_fixed.type_id = 0
             new_wyscout_data.event_fixed.end_x, new_wyscout_data.event_fixed.end_y = new_wyscout_data.event_fixed.start_x, new_wyscout_data.event_fixed.start_y
-            push!(vector_wyscout_data, new_wyscout_data)
+            push!(new_vector_wyscout_data, new_wyscout_data)
         end
-
     end
 
     return vector_wyscout_data
