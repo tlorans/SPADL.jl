@@ -9,13 +9,15 @@ test = get_events(test, "events_Italy.json");
 
 # @time check = get_tags(events_df)
 
+events_df
 
-@time check = convert_to_actions(events_df)
+# using DataFrames
+# in_df = DataFrame(events_df)
 
-@time tags_df = get_tags(events_df);
 
 
-@time check = convert_duels(events_df, tags_df)
+@time check = (convert_to_actions(events_df))
+
 
 check[:selector_duel_won]
 for i in eachindex(check[:selector_duel_won])
