@@ -7,7 +7,7 @@ Perform some fixes on the events such that the spadl action dataframe can be bui
 function fix_events(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
     vector_wyscout_data = create_shot_coordinates(vector_wyscout_data)
     vector_wyscout_data = convert_duels(vector_wyscout_data)
-
+    # vector_wyscout_data = insert_interception_passes(vector_wyscout_data)
 end
 
 
@@ -79,12 +79,12 @@ function convert_duels(vector_wyscout_data::Vector{WyscoutData})
                                             selector_same_period)
 
             # Define selector for current time step 
-            selector_0_duel_won = selector_duel_out_of_field && (vector_wyscout_data[i].event.team_id != vector_wyscout_data[i+2].team_id)
+            selector_0_duel_won = selector_duel_out_of_field && (vector_wyscout_data[i].event.team_id != vector_wyscout_data[i+2].event.team_id)
             selector_0_duel_won_air = selector_0_duel_won && (vector_wyscout_data[i].event.subtype_id == 10)
             selector_0_duel_won_not_air = selector_0_duel_won && (vector_wyscout_data[i].event.subtype_id != 10)
 
             # Define selector for next time step 
-            selector_1_duel_won = selector_duel_out_of_field && (vector_wyscout_data[i+1].event.team_id != vector_wyscout_data[i+2].team_id)
+            selector_1_duel_won = selector_duel_out_of_field && (vector_wyscout_data[i+1].event.team_id != vector_wyscout_data[i+2].event.team_id)
             selector_1_duel_won_air = selector_1_duel_won && (vector_wyscout_data[i+1].event.subtype_id == 10)
             selector_1_duel_won_not_air = selector_1_duel_won && (vector_wyscout_data[i+1].event.subtype_id != 10)
 
@@ -115,11 +115,34 @@ function convert_duels(vector_wyscout_data::Vector{WyscoutData})
             if vector_wyscout_data[i].tags.sliding_tackle vector_wyscout_data[i].event_fixed.type_id = 0 end
 
         end
+    end
+    # drop the remaining duels 
+    vector_wyscout_data = filter(el -> el.event_fixed.type_id != 1, vector_wyscout_data)
+    return vector_wyscout_data
+end
 
-        # drop the remaining duels 
-        vector_wyscout_data = filter(el -> el.event_fixed.type_id != 1, vector_wyscout_data)
+"""
+    function insert_interception_passes()
+This function converts passes (type_id 8) that are also interceptions
+(tag interception) in the Wyscout event data into two separate events,
+first an interception and then a pass.
+"""
+function insert_interception_passes(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
 
+    for i in eachindex(vector_wyscout_data)
+    
+        interception = vector_wyscout_data[i].tags.interception && vector_wyscout_data.event_fixed.type_id == 8
+        
+        if interception
+            tags = WyscoutEventTags(interception = true)
+            new_wyscout_data = copy(vector_wyscout_data[i])
+            new_wyscout_data.event_fixed.type_id = 0 
+            new_wyscout_data.event_fixed.type_id = 0
+            new_wyscout_data.event_fixed.end_x, new_wyscout_data.event_fixed.end_y = new_wyscout_data.event_fixed.start_x, new_wyscout_data.event_fixed.start_y
+            push!(vector_wyscout_data, new_wyscout_data)
+        end
 
-        return vector_wyscout_data
     end
 
+    return vector_wyscout_data
+end

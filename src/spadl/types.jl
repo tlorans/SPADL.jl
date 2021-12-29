@@ -102,7 +102,7 @@ Base.@kwdef mutable struct WyscoutEventFixed
     end_y::Union{Nothing,Float64} = nothing
     team_id::Union{Nothing,Int} = nothing 
     type_id::Union{Nothing,Int} = nothing
-    subtype_id::Union{Nothing,String} = nothing
+    subtype_id::Union{Nothing,Int} = nothing
 end
 
 """
