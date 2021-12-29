@@ -1,5 +1,60 @@
 
 """
+function fix_events()
+
+Perform some fixes on the events such that the spadl action dataframe can be built. 
+"""
+function fix_events(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
+    vector_wyscout_data = create_shot_coordinates(vector_wyscout_data)
+    # event_df = convert_duels(event_df)
+
+end
+
+
+"""
+function create_shot_coordinates()
+
+Create short coordinates (estimates) from Wyscout tags
+# """
+function create_shot_coordinates(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
+
+    for i in eachindex(vector_wyscout_data)
+        
+        if vector_wyscout_data[i].tags.position_goal_low_center || tags_df[i].position_goal_mid_center || tags_df[i].position_goal_high_center
+            spadl_df[i].end_x = 100
+            spadl_df[i].end_y = 50
+        elseif tags_df[i].position_goal_low_right || tags_df[i].position_goal_mid_right || tags_df[i].position_goal_high_right
+            spadl_df[i].end_x = 100
+            spadl_df[i].end_y = 55
+        elseif tags_df[i].position_goal_mid_left || tags_df[i].position_goal_low_left || tags_df[i].position_goal_high_left
+            spadl_df[i].end_x = 100
+            spadl_df[i].end_y = 45
+        elseif tags_df[i].position_out_high_center || tags_df[i].position_post_high_center
+            spadl_df[i].end_x = 100
+            spadl_df[i].end_y = 50
+        elseif tags_df[i].position_out_low_right || tags_df[i].position_out_mid_right || tags_df[i].position_out_high_right
+            spadl_df[i].end_x = 100
+            spadl_df[i].end_y = 60
+        elseif tags_df[i].position_out_mid_left || tags_df[i].position_out_low_left || tags_df[i].position_out_high_left
+            spadl_df[i].end_x = 100
+            spadl_df[i].end_y = 40
+        elseif tags_df[i].position_post_mid_left || tags_df[i].position_post_low_left || tags_df[i].position_post_high_left
+            spadl_df[i].end_x = 100
+            spadl_df[i].end_y = 55.38
+        elseif tags_df[i].position_post_low_right || tags_df[i].position_post_mid_right || tags_df[i].position_post_high_right
+            spadl_df[i].end_x = 100
+            spadl_df[i].end_y = 44.62
+        elseif tags_df[i].blocked 
+            spadl_df[i].end_x = spadl_df[i].start_x
+            spadl_df[i].end_y = spadl_df[i].start_y
+        end
+    end
+
+    return spadl_df
+end
+
+
+"""
 function convert_duels()
     
 This function converts Wyscout duels that end with the ball out of field

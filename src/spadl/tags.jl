@@ -68,15 +68,14 @@ end
     function get_tags()
 
 """
-function get_tags(events_data::Vector{WyscoutEvent})::Vector{WyscoutEventTags}
+function get_tags(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
 
-    vector_tags = Vector{WyscoutEventTags}()
 
-    for i in eachindex(events_data)
+    for i in eachindex(vector_wyscout_data)
         tags = WyscoutEventTags()
 
-        for j in eachindex(events_data[i].tags)
-            tag = events_data[i].tags[j]["id"]
+        for j in eachindex(vector_wyscout_data[i].event.tags)
+            tag = vector_wyscout_data[i].event.tags[j]["id"]
             
             if tag == 101 tags.goal = true end
             if tag == 102 tags.own_goal = true end
@@ -140,8 +139,8 @@ function get_tags(events_data::Vector{WyscoutEvent})::Vector{WyscoutEventTags}
 
         end
 
-        push!(vector_tags, tags)
+        vector_wyscout_data[i].tags = tags
     end
 
-    return vector_tags
+    return vector_wyscout_data
 end

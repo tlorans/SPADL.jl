@@ -3,8 +3,7 @@
 include("tags.jl")
 include("actions.jl")
 include("positions.jl")
-include("fixing_events/shot_coordinates.jl")
-include("fixing_events/duels.jl")
+include("fixing_events.jl")
 
 
 """

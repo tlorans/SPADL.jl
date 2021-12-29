@@ -58,8 +58,8 @@ function convert_to_actions(event_df::Vector{WyscoutEvent})
 
     vector_wyscout_data = create_wyscout_data_processing(event_df)
     vector_wyscout_data = make_new_positions(vector_wyscout_data)
-
-    # vector_spadl = fix_wyscout_events(vector_spadl, tags_df, event_df)
+    vector_wyscout_data = get_tags(vector_wyscout_data)
+    # vector_wyscout_data = fix_wyscout_events(vector_wyscout_data)
 end
 
 """
@@ -106,15 +106,3 @@ end
 #     return vector_spadl
 # end
 
-
-"""
-    function fix_events()
-
-Perform some fixes on the events such that the spadl action dataframe can be built. 
-"""
-# function fix_events(spadl_df::Vector{RegularSPADL}, tags_df::Vector{WyscoutEventTags}, event_df::Vector{WyscoutEvent})::Vector{RegularSPADL}
-
-#     spadl_df = create_shot_coordinates(spadl_df, tags_df)
-#     event_df = convert_duels(event_df)
-
-# end
