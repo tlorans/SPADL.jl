@@ -1,6 +1,6 @@
-using SPADL 
+using SPADL
 
-test = get_events_data(:wyscout)
+@time test = get_events_data(:wyscout, download = false, path = "wyscout_data")
 GC.gc()
 # we have to update the loader first
 test = get_events(test, "events_Italy.json")
@@ -9,7 +9,9 @@ test = get_events(test, "events_Italy.json")
 
 # @time check = get_tags(events_df)
 
+
 @time check = convert_to_actions(events_df)
+
 @time tags_df = get_tags(events_df);
 
 
