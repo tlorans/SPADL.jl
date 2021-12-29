@@ -19,6 +19,7 @@ events_df
 @time check = (convert_to_actions(events_df))
 using DataFrames
 
+#### We need to add miliseconds in WyscoutEventFixed
 view = []
 for i in eachindex(check)
     tmp = (check[i].event_fixed)
