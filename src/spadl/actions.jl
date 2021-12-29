@@ -1,54 +1,6 @@
 # This file contains functions to create the actions dataframe.
 
 """
-    SPADL
-"""
-Base.@kwdef mutable struct RegularSPADL 
-    action_id::Union{Nothing,Int} = nothing
-    bodypart_id::Union{Nothing,Int} = nothing
-    bodypart_name::Union{Nothing,String} = nothing
-    end_x::Union{Nothing,Float64} = nothing
-    end_y::Union{Nothing,Float64} = nothing
-    game_id::Union{Nothing,Int} = nothing
-    original_event_id::Union{Nothing,Int} = nothing
-    period_id::Union{Nothing,String} = nothing
-    result_id::Union{Nothing,Int} = nothing
-    result_name::Union{Nothing,String} = nothing
-    start_x::Union{Nothing,Float64} = nothing
-    start_y::Union{Nothing,Float64} = nothing
-    team_id::Union{Nothing,Int} = nothing 
-    time_seconds::Union{Nothing,Float64} = nothing
-    type_id::Union{Nothing,Int} = nothing
-    type_name::Union{Nothing,String} = nothing
-end
-
-"""
-    WyscoutEventFixed
-"""
-Base.@kwdef mutable struct WyscoutEventFixed
-    event_id::Int 
-    game_id::Int 
-    player_id::Int 
-    period_id::String 
-    start_x::Union{Nothing,Float64} = nothing
-    start_y::Union{Nothing,Float64} = nothing
-    end_x::Union{Nothing,Float64} = nothing
-    end_y::Union{Nothing,Float64} = nothing
-    team_id::Union{Nothing,Int} = nothing 
-    type_id::Union{Nothing,Int} = nothing
-    subtype_id::Union{Nothing,String} = nothing
-end
-
-"""
-    WyscoutData
-"""
-Base.@kwdef mutable struct WyscoutData
-    event::WyscoutEvent
-    tags::Union{Nothing,WyscoutEventTags} = nothing
-    event_fixed::Union{Nothing,WyscoutEventFixed} = nothing
-end
-
-"""
     function convert_to_actions(event_df)
 Convert Wyscout events to SPADL actions.
 Step 1: initialize a vector of WyscoutData
@@ -59,7 +11,7 @@ function convert_to_actions(event_df::Vector{WyscoutEvent})
     vector_wyscout_data = create_wyscout_data_processing(event_df)
     vector_wyscout_data = make_new_positions(vector_wyscout_data)
     vector_wyscout_data = get_tags(vector_wyscout_data)
-    # vector_wyscout_data = fix_wyscout_events(vector_wyscout_data)
+    vector_wyscout_data = fix_events(vector_wyscout_data)
 end
 
 """

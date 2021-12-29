@@ -1,5 +1,6 @@
 # This file contains function to convert events dataframe to SPADL representation.
 
+include("types.jl")
 include("tags.jl")
 include("actions.jl")
 include("positions.jl")

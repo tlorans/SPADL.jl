@@ -20,37 +20,37 @@ function create_shot_coordinates(vector_wyscout_data::Vector{WyscoutData})::Vect
 
     for i in eachindex(vector_wyscout_data)
         
-        if vector_wyscout_data[i].tags.position_goal_low_center || tags_df[i].position_goal_mid_center || tags_df[i].position_goal_high_center
-            spadl_df[i].end_x = 100
-            spadl_df[i].end_y = 50
-        elseif tags_df[i].position_goal_low_right || tags_df[i].position_goal_mid_right || tags_df[i].position_goal_high_right
-            spadl_df[i].end_x = 100
-            spadl_df[i].end_y = 55
-        elseif tags_df[i].position_goal_mid_left || tags_df[i].position_goal_low_left || tags_df[i].position_goal_high_left
-            spadl_df[i].end_x = 100
-            spadl_df[i].end_y = 45
-        elseif tags_df[i].position_out_high_center || tags_df[i].position_post_high_center
-            spadl_df[i].end_x = 100
-            spadl_df[i].end_y = 50
-        elseif tags_df[i].position_out_low_right || tags_df[i].position_out_mid_right || tags_df[i].position_out_high_right
-            spadl_df[i].end_x = 100
-            spadl_df[i].end_y = 60
-        elseif tags_df[i].position_out_mid_left || tags_df[i].position_out_low_left || tags_df[i].position_out_high_left
-            spadl_df[i].end_x = 100
-            spadl_df[i].end_y = 40
-        elseif tags_df[i].position_post_mid_left || tags_df[i].position_post_low_left || tags_df[i].position_post_high_left
-            spadl_df[i].end_x = 100
-            spadl_df[i].end_y = 55.38
-        elseif tags_df[i].position_post_low_right || tags_df[i].position_post_mid_right || tags_df[i].position_post_high_right
-            spadl_df[i].end_x = 100
-            spadl_df[i].end_y = 44.62
-        elseif tags_df[i].blocked 
-            spadl_df[i].end_x = spadl_df[i].start_x
-            spadl_df[i].end_y = spadl_df[i].start_y
+        if vector_wyscout_data[i].tags.position_goal_low_center || vector_wyscout_data[i].tags.position_goal_mid_center || vector_wyscout_data[i].tags.position_goal_high_center
+            vector_wyscout_data[i].event_fixed.end_x = 100
+            vector_wyscout_data[i].event_fixed.end_y = 50
+        elseif vector_wyscout_data[i].tags.position_goal_low_right || vector_wyscout_data[i].tags.position_goal_mid_right || vector_wyscout_data[i].tags.position_goal_high_right
+            vector_wyscout_data[i].event_fixed.end_x = 100
+            vector_wyscout_data[i].event_fixed.end_y = 55
+        elseif vector_wyscout_data[i].tags.position_goal_mid_left || vector_wyscout_data[i].tags.position_goal_low_left || vector_wyscout_data[i].tags.position_goal_high_left
+            vector_wyscout_data[i].event_fixed.end_x = 100
+            vector_wyscout_data[i].event_fixed.end_y = 45
+        elseif vector_wyscout_data[i].tags.position_out_high_center || vector_wyscout_data[i].tags.position_post_high_center
+            vector_wyscout_data[i].event_fixed.end_x = 100
+            vector_wyscout_data[i].event_fixed.end_y = 50
+        elseif vector_wyscout_data[i].tags.position_out_low_right || vector_wyscout_data[i].tags.position_out_mid_right || vector_wyscout_data[i].tags.position_out_high_right
+            vector_wyscout_data[i].event_fixed.end_x = 100
+            vector_wyscout_data[i].event_fixed.end_y = 60
+        elseif vector_wyscout_data[i].tags.position_out_mid_left || vector_wyscout_data[i].tags.position_out_low_left || vector_wyscout_data[i].tags.position_out_high_left
+            vector_wyscout_data[i].event_fixed.end_x = 100
+            vector_wyscout_data[i].event_fixed.end_y = 40
+        elseif vector_wyscout_data[i].tags.position_post_mid_left || vector_wyscout_data[i].tags.position_post_low_left || vector_wyscout_data[i].tags.position_post_high_left
+            vector_wyscout_data[i].event_fixed.end_x = 100
+            vector_wyscout_data[i].event_fixed.end_y = 55.38
+        elseif vector_wyscout_data[i].tags.position_post_low_right || vector_wyscout_data[i].tags.position_post_mid_right || vector_wyscout_data[i].tags.position_post_high_right
+            vector_wyscout_data[i].event_fixed.end_x = 100
+            vector_wyscout_data[i].event_fixed.end_y = 44.62
+        elseif vector_wyscout_data[i].tags.blocked 
+            vector_wyscout_data[i].event_fixed.end_x = vector_wyscout_data[i].event_fixed.start_x
+            vector_wyscout_data[i].event_fixed.end_y = vector_wyscout_data[i].event_fixed.start_y
         end
     end
 
-    return spadl_df
+    return vector_wyscout_data
 end
 
 
