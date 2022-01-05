@@ -7,16 +7,12 @@ test = get_events(test, "events_Italy.json");
 
 @time events_df = events(test, 2576336);
 
-# @time check = get_tags(events_df)
-
-events_df
-
-# using DataFrames
-# in_df = DataFrame(events_df)
-
 
 
 @time check = convert_to_actions(events_df)
+
+
+
 
 using DataFrames
 
@@ -28,11 +24,12 @@ for i in eachindex(check)
 end
 view = DataFrame(view)
 
+# for i in 1:size(view,1)
+#     if i > 1 && view[i, :period_id] == view[i-1, :period_id]
+#         if view[i, :milliseconds] < view[i-1, :milliseconds]
+#             println("we have a problem", i)
+#         end
+#     end
+# end
 
-check[:selector_duel_won]
-for i in eachindex(check[:selector_duel_won])
-    if check[:selector_duel_won][i]
-        println(check[:selector_duel_won][i])
-    end
-end
 

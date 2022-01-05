@@ -85,6 +85,8 @@ Base.@kwdef mutable struct WyscoutEventTags
     won::Bool = false
     accurate::Bool = false
     not_accurate::Bool = false
+    # added offside 
+    offside::Bool = false
 end
 
 

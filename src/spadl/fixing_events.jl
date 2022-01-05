@@ -8,6 +8,10 @@ function fix_events(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutDat
     vector_wyscout_data = create_shot_coordinates(vector_wyscout_data)
     vector_wyscout_data = convert_duels(vector_wyscout_data)
     vector_wyscout_data = insert_interception_passes(vector_wyscout_data)
+    vector_wyscout_data = add_offside_variable(vector_wyscout_data)
+    vector_wyscout_data = convert_touches(vector_wyscout_data)
+
+    return vector_wyscout_data
 end
 
 
@@ -147,4 +151,76 @@ function insert_interception_passes(vector_wyscout_data::Vector{WyscoutData})::V
     end
 
     return vector_wyscout_data
+end
+
+
+"""
+    function add_offside_variable
+This function removes the offside events in the Wyscout event data and adds
+sets offside to 1 for the previous event (if this was a passing event)
+"""
+function add_offside_variable(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
+
+    for i in eachindex(vector_wyscout_data)
+        if i < length(vector_wyscout_data) - 1
+        # Selector_offside_pass 
+            selector_offside = (vector_wyscout_data[i+1].event_fixed.type_id == 6) && (vector_wyscout_data[i].event_fixed.type_id == 8)
+            # set boolean offside to true if offside pass 
+            if selector_offside
+                vector_wyscout_data[i].tags.offside = true
+            end                
+        end
+    end
+
+    # remove offside events 
+    vector_wyscout_data = filter(x -> x.event_fixed.type_id != 6, vector_wyscout_data)
+
+    return vector_wyscout_data
+end
+
+
+"""
+    function convert_touches()
+
+This function converts the Wyscout 'touch' event (sub_type_id 72) into either
+a dribble or a pass (accurate or not depending on receiver)
+"""
+function convert_touches(vector_wyscout_data::Vector{WyscoutData})::Vector{WyscoutData}
+    min_dribble_length = 3.0
+
+    for i in eachindex(vector_wyscout_data)
+        if i < length(vector_wyscout_data) - 1
+
+            # select touch data 
+            selector_touch = (vector_wyscout_data[i].event_fixed.subtype_id == 72) & !(vector_wyscout_data[i].tags.interception)
+            
+            selector_same_player = (vector_wyscout_data[i].event_fixed.player_id == vector_wyscout_data[i+1].event_fixed.player_id)
+            selector_same_team = (vector_wyscout_data[i].event_fixed.team_id == vector_wyscout_data[i+1].event_fixed.team_id)
+
+            selector_touch_same_team = (selector_touch && !selector_same_player && selector_same_team)
+            selector_touch_other = (selector_touch && !selector_same_player && !selector_same_team)
+
+            same_x = abs(vector_wyscout_data[i].event_fixed.end_x - vector_wyscout_data[i+1].event_fixed.start_x) < min_dribble_length
+            same_y = abs(vector_wyscout_data[i].event_fixed.end_y - vector_wyscout_data[i+1].event_fixed.start_y) < min_dribble_length
+            same_loc = same_x && same_y
+
+            if selector_touch_same_team && same_loc 
+                vector_wyscout_data[i].event_fixed.type_id = 8
+                vector_wyscout_data[i].event_fixed.subtype_id = 85
+                vector_wyscout_data[i].tags.accurate = true 
+                vector_wyscout_data[i].tags.not_accurate = false
+            end
+
+            if selector_touch_other && same_loc 
+                vector_wyscout_data[i].event_fixed.type_id = 8
+                vector_wyscout_data[i].event_fixed.subtype_id = 85
+                vector_wyscout_data[i].tags.accurate = false 
+                vector_wyscout_data[i].tags.not_accurate = true
+            end
+
+        end
+
+    end
+    return vector_wyscout_data
+
 end
