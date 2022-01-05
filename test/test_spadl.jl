@@ -12,6 +12,8 @@ test = get_events(test, "events_Italy.json");
 @time check = convert_to_actions(events_df)
 
 
+configs = ActionsConfig()
+findall(x -> x == "head", configs.bodyparts)
 
 
 

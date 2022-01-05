@@ -18,6 +18,7 @@ module SPADL
     export 
     # Types 
     WyscoutEvent,
+    ActionsConfig,
 
     # Serializers
     get_events_data,

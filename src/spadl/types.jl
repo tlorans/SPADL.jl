@@ -109,10 +109,46 @@ Base.@kwdef mutable struct WyscoutEventFixed
 end
 
 """
-WyscoutData
+    WyscoutData
 """
 Base.@kwdef mutable struct WyscoutData
     event::WyscoutEvent
     tags::Union{Nothing,WyscoutEventTags} = nothing
     event_fixed::Union{Nothing,WyscoutEventFixed} = nothing
+end
+
+
+"""
+    ActionsConfig
+"""
+Base.@kwdef mutable struct ActionsConfig
+    field_length::Float64 = 105.0 # unit: meters 
+    field_width::Float64 = 68.0  # unit meters
+    bodyparts::Vector{String} = ["foot", "head", "other", "head/other"]
+    results::Vector{String} = ["fail","success","offside","owngoal","yellow_card","red_card"]
+    actionstypes::Vector{String} = [
+        "pass",
+        "cross",
+        "throw_in",
+        "freekick_crossed",
+        "freekick_short",
+        "corner_crossed",
+        "corner_short",
+        "take_on",
+        "foul",
+        "tackle",
+        "interception",
+        "shot",
+        "shot_penalty",
+        "shot_freekick",
+        "keeper_save",
+        "keeper_claim",
+        "keeper_punch",
+        "keeper_pick_up",
+        "clearance",
+        "bad_touch",
+        "non_action",
+        "dribble",
+        "goalkick"
+    ]
 end
