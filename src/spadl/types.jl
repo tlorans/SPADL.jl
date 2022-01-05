@@ -103,6 +103,7 @@ Base.@kwdef mutable struct WyscoutEventFixed
     team_id::Union{Nothing,Int} = nothing 
     type_id::Union{Nothing,Int} = nothing
     subtype_id::Union{Nothing,Int} = nothing
+    milliseconds::Float64
 end
 
 """

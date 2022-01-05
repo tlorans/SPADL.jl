@@ -27,7 +27,8 @@ function create_wyscout_data_processing(event_df::Vector{WyscoutEvent})::Vector{
                                 period_id = event_df[i].period_id,
                                 team_id = event_df[i].team_id,
                                 type_id = event_df[i].type_id,
-                                player_id = event_df[i].player_id)
+                                player_id = event_df[i].player_id,
+                                milliseconds = event_df[i].milliseconds)
 
         tmp = WyscoutData(event = event_df[i], event_fixed = tmp_event_fixed)
         push!(vector_wyscout_data, tmp)

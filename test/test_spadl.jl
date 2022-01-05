@@ -16,7 +16,8 @@ events_df
 
 
 
-@time check = (convert_to_actions(events_df))
+@time check = convert_to_actions(events_df)
+
 using DataFrames
 
 #### We need to add miliseconds in WyscoutEventFixed
@@ -35,6 +36,3 @@ for i in eachindex(check[:selector_duel_won])
     end
 end
 
-
-
-@time check = selector_duel_out_of_field(events_df);
